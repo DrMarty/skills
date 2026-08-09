@@ -1,6 +1,6 @@
 {
   "name": "okf-manager",
-  "version": "0.2.0+codex.20260809085029",
+  "version": "0.3.0",
   "description": "Manage portable Open Knowledge Format catalogs with provenance-aware workflows and deterministic validation.",
   "author": {
     "name": "DrMarty",

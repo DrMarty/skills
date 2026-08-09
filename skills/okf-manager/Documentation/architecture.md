@@ -27,7 +27,7 @@ The skill owns workflow and policy. References provide progressive disclosure. S
 
 ## Visualization interface
 
-The graph shell uses three resizable desktop regions: a searchable concept tree, a D3 graph canvas, and concept details. The tree has global, type, and concept visibility controls with live counts and starts with only its top-level Types branch expanded. The detail panel renders a safe Markdown subset and maintains back/forward concept history. Canvas controls provide zoom, fit, reset-unpin-refit, and dismissible help. Generated graph data remains embedded in `viz.html`; D3 is loaded from jsDelivr when the page opens.
+The graph shell uses three resizable desktop regions: a left navigation/glossary sidebar, a D3 graph canvas, and concept details. The left sidebar has independently collapsible sections separated by a draggable horizontal splitter: concept search and the hierarchical navigation tree above, and the generated catalog glossary below. Glossary source links select the corresponding graph concept. The tree has global, type, and concept visibility controls with live counts and starts with only its top-level Types branch expanded. The detail panel keeps concept metadata and back/forward history above independently collapsible, vertically resizable Outgoing Links, Backlinks, and Body Preview sections. Body Preview renders a safe Markdown subset, and links in every detail section follow the same concept-selection path. Canvas controls provide zoom, fit, reset-unpin-refit, and dismissible help. Generated graph and glossary data remain embedded in `viz.html`; D3 is loaded from jsDelivr when the page opens.
 
 ## Runtime
 

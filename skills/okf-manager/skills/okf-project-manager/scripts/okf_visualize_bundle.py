@@ -8,6 +8,7 @@ import sys
 from pathlib import Path
 
 _LINK_RE = re.compile(r"\]\(([^)\s]+\.md)(?:#[A-Za-z0-9_-]*)?\)")
+_MARKDOWN_LINK_RE = re.compile(r"\[([^\]]+)\]\(([^)]+)\)")
 _TYPE_COLORS = [
     "#60a5fa",
     "#34d399",
@@ -24,6 +25,34 @@ _TYPE_COLORS = [
 def _is_raw_evidence(rel) -> bool:
     parts = rel.parts if hasattr(rel, "parts") else Path(str(rel)).parts
     return len(parts) >= 2 and parts[0] == "sources" and parts[1] == "raw"
+
+
+def _parse_glossary(root: Path, concept_ids: set[str]) -> list[dict]:
+    glossary_path = root / "glossary.md"
+    if not glossary_path.is_file():
+        return []
+    entries = []
+    for line in glossary_path.read_text(encoding="utf-8", errors="replace").splitlines():
+        if not line.startswith("|"):
+            continue
+        cells = [cell.strip() for cell in line.strip().strip("|").split("|")]
+        if len(cells) < 3 or cells[0] in {"Term", "---"}:
+            continue
+        term, meaning, sources_cell = cells[:3]
+        sources = []
+        for label, target in _MARKDOWN_LINK_RE.findall(sources_cell):
+            clean_target = target.split("#", 1)[0]
+            if "://" in clean_target or clean_target.startswith("/"):
+                continue
+            concept_id = Path(clean_target).with_suffix("").as_posix()
+            if concept_id in concept_ids:
+                sources.append({"id": concept_id, "title": label})
+        entries.append({
+            "term": term,
+            "meaning": "" if meaning == "—" else meaning,
+            "sources": sources,
+        })
+    return entries
 
 def _build_graph(root: Path) -> dict:
     concepts = []
@@ -84,6 +113,7 @@ def _build_graph(root: Path) -> dict:
         "edges": edges,
         "types": type_names,
         "palette": palette,
+        "glossary": _parse_glossary(root, ids),
         "stats": {
             "mode": "live-d3-self-graph",
             "concepts": len(concepts),

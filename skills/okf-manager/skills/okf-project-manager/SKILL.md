@@ -1,6 +1,6 @@
 ---
 name: okf-project-manager
-description: Manage portable Open Knowledge Format (OKF) catalogs in Codex, including catalog creation, source ingestion, provenance retention, concept listing/reading/writing, validation, index and log maintenance, guarded web enrichment, optional BigQuery enrichment, and interactive graph generation. Use for requests to create or inspect an OKF bundle, ingest files or URLs into OKF, update a knowledge catalog, validate or repair OKF documents and links, regenerate indexes, or display the knowledge graph.
+description: Manage portable Open Knowledge Format (OKF) catalogs in Codex, including catalog creation, source ingestion, provenance retention, concept listing/reading/writing, validation, glossary, index and log maintenance, guarded web enrichment, optional BigQuery enrichment, and interactive graph generation. Use for requests to create or inspect an OKF bundle, ingest files or URLs into OKF, update a knowledge catalog, validate or repair OKF documents and links, regenerate derived catalog artifacts, or display the knowledge graph.
 ---
 
 # OKF Project Manager
