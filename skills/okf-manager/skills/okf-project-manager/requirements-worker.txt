@@ -1,0 +1,7 @@
+# OKF Manager deterministic worker dependencies
+# Installed into the plugin-local .venv by scripts/okf_bootstrap_env.py.
+PyYAML>=6.0
+beautifulsoup4>=4.12
+lxml>=5.0
+requests>=2.31
+markdownify>=0.13

@@ -1,17 +1,28 @@
 # OKF Manager for Codex
 
-OKF Manager is a progressive Codex port of the [Agent Zero OKF Manager plugin](https://github.com/DrMarty/okf_manager). It is intended to manage portable Open Knowledge Format catalogs while preserving evidence provenance and keeping generated catalog data separate from the installed plugin.
+OKF Manager ports the portable behavior of the [Agent Zero OKF Manager](https://github.com/DrMarty/okf_manager) into a skills-first Codex plugin.
 
-## Current milestone
+It supports:
 
-Version `0.1.0` establishes the skills-first Codex package and supports local structural and activation validation. Catalog mutation helpers have not yet been ported.
+- catalog discovery and confirmation-gated creation;
+- file inventory, JSON concept planning, and raw evidence retention;
+- concept listing, reading, guarded writing, and chronological logs;
+- strict frontmatter and relative-link validation;
+- deterministic index generation;
+- interactive `viz.html` graph generation and payload verification;
+- stateful, host/path/depth/page-limited web ingestion;
+- optional BigQuery concept discovery, metadata reads, and sampling.
 
-## Planned port sequence
+The package uses a user-local worker environment and does not require an MCP server or hosted service for local catalog operation.
 
-1. Catalog discovery and bundle-creation confirmation.
-2. Deterministic validation and index generation.
-3. Evidence ingestion and provenance handling.
-4. Graph generation and local display.
-5. Publication hardening and distribution metadata.
+## Local installation
 
-See this package's [`Requirements`](./Requirements/Index.md) and [`Documentation`](./Documentation/Index.md) indexes for the governing requirements and architecture.
+This repository exposes the plugin through its local marketplace:
+
+```text
+codex plugin marketplace add <absolute-path-to-this-repository>
+```
+
+Then open the Codex Plugins interface, select `okf-manager` from **DrMarty Skills (Local)**, and install it. Start a new Codex task after installation. See [`Documentation/local-testing.md`](./Documentation/local-testing.md) for validation commands and smoke prompts.
+
+See [`Requirements`](./Requirements/Index.md) and [`Documentation`](./Documentation/Index.md) for the governing requirements and architecture.

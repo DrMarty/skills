@@ -10,9 +10,9 @@ The repository shall contain an `okf-manager` directory with a valid Codex plugi
 
 The initial implementation shall support validation as a local Codex plugin without requiring a hosted service or MCP server.
 
-### R-OKF-003: Progressive behavioral port
+### R-OKF-003: Agent Zero behavioral parity
 
-OKF catalog discovery, creation confirmation, evidence preservation, concept maintenance, validation, indexing, logging, and visualization shall be ported incrementally from the Agent Zero implementation.
+The Codex plugin shall provide the portable behavior of the Agent Zero implementation: catalog discovery, creation confirmation, source inventory, evidence retention, concept listing/reading/writing, guarded web ingestion, validation, indexing, logging guidance, graph generation, and graph verification.
 
 ### R-OKF-004: Deterministic catalog operations
 
@@ -30,7 +30,30 @@ The plugin shall preserve source provenance, require confirmation before creatin
 
 The package structure, metadata, documentation, licensing, and validation approach shall be suitable for eventual publication as a Codex plugin.
 
-## Initial milestone
+### R-OKF-008: Explicit Codex runtime
 
-The first milestone is limited to repository creation, a valid skills-first plugin scaffold, documentation, and structural validation. It does not port or execute OKF catalog operations.
+Codex shall invoke bundled worker operations through a stable runner using explicit paths. Worker dependencies shall be isolated from user projects and the installed plugin package.
 
+### R-OKF-009: Concept integrity
+
+Concept operations shall enforce path-safe IDs, reserved filename protection, required reference-compatible frontmatter, preservation of unknown metadata, citations for generated concept plans, and guarded web-pass updates that do not shrink schemas or citations.
+
+### R-OKF-010: Evidence inventory and retention
+
+Source inventory and raw-evidence retention shall exclude hidden files, repositories, caches, virtual environments, dependency folders, logs, and generated artifacts unless explicitly selected by the user.
+
+### R-OKF-011: Guarded web ingestion
+
+URL ingestion shall require explicit seeds and enforce HTTP(S), allowed hosts, allowed path prefixes, denied path substrings, crawl depth, page budgets, visited-state tracking, response size limits, and user-directed network disclosure.
+
+### R-OKF-012: Optional BigQuery enrichment
+
+BigQuery concept listing, metadata reads, and row sampling shall remain available as optional operations and shall fail clearly when the optional dependency or credentials are unavailable.
+
+### R-OKF-013: End-to-end local verification
+
+Automated tests shall exercise source planning, sequential concept writing, evidence cleanup, concept inspection, validation, index generation, visualization, graph verification, and guarded local HTTP ingestion without requiring external services.
+
+## Local-test milestone
+
+The local-test milestone is complete only when the Codex plugin and skill validators pass, the end-to-end worker tests pass, the local marketplace exposes `okf-manager`, Codex reports the plugin as installed, and a fresh Codex task can load the updated skill.

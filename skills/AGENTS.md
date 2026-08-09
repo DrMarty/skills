@@ -27,5 +27,4 @@
 
 ## Child DOX Index
 
-- `okf-manager/AGENTS.md` owns the OKF Manager Codex plugin and its progressive Agent Zero port.
-
+- `okf-manager/AGENTS.md` owns the OKF Manager Codex plugin and its Agent Zero-compatible workflow baseline.

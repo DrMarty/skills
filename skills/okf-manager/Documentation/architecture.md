@@ -1,36 +1,56 @@
 # OKF Manager Architecture
 
-## Initial architecture
-
-OKF Manager begins as a skills-first Codex plugin:
+## Package structure
 
 ```text
 okf-manager/
-├── .codex-plugin/
-│   └── plugin.json
-└── skills/
-    └── okf-project-manager/
-        └── SKILL.md
+├── .codex-plugin/plugin.json
+├── assets/
+├── Documentation/
+├── Requirements/
+├── tests/
+└── skills/okf-project-manager/
+    ├── SKILL.md
+    ├── agents/openai.yaml
+    ├── references/
+    ├── requirements-worker.txt
+    ├── requirements-bigquery.txt
+    └── scripts/
 ```
 
-The skill is the workflow and policy layer. Deterministic helpers will be added beneath the skill as individual Agent Zero behaviors are ported and locally validated.
+The skill owns workflow and policy. References provide progressive disclosure. Scripts provide low-variance filesystem, ingestion, validation, indexing, graph, guarded network, and optional BigQuery operations.
 
-Package-specific requirements and documentation remain inside the `okf-manager` directory so the package stays self-contained within the multi-skill repository.
+## Runtime
 
-## Porting boundaries
+`okf_run.py` is the stable entry point. On first use it bootstraps a worker virtual environment beneath the user-local Codex cache:
 
-- Agent Zero's `plugin.yaml` is replaced by `.codex-plugin/plugin.json`.
-- Agent Zero-specific paths, project metadata, browser calls, and subordinate-agent APIs are not carried into Codex unchanged.
-- The Agent Zero specialist profile will initially be represented by focused skill instructions.
-- A custom Codex subagent remains optional and must not be required for basic plugin operation.
-- An MCP server will be considered only when controlled tools, remote services, authentication, or an interactive MCP UI provide a concrete benefit.
-- Generated catalogs remain project or user data and are never written into the installed plugin package.
+- Windows: `%LOCALAPPDATA%/Codex/okf-manager/venv`
+- Other platforms: `${XDG_CACHE_HOME:-~/.cache}/codex/okf-manager/venv`
 
-## Progressive milestones
+`OKF_MANAGER_HOME` overrides the worker-data root for isolated tests. Mutable catalogs and raw evidence remain outside the plugin package.
 
-1. Establish and validate the Codex package.
-2. Port catalog discovery and creation confirmation.
-3. Port deterministic validation and index generation.
-4. Port evidence ingestion and provenance handling.
-5. Port graph generation and local display.
-6. Harden metadata, testing, and documentation for publication.
+## Agent Zero parity map
+
+| Agent Zero behavior | Codex implementation |
+| --- | --- |
+| `okf_context` | Explicit catalog/source arguments resolved by `SKILL.md` |
+| list/read/write concept tools | `okf_concepts.py` and runner commands |
+| source inventory and bulk write | `okf_plan_sources.py`, `okf_bulk_write.py` |
+| raw evidence cleanup | `okf_clean_raw.py` |
+| validation and link lint | `okf_validate_bundle.py`, `okf_lint_catalog.py` |
+| generated indexes | `okf_regenerate_indexes.py` |
+| live graph and verification | `okf_visualize_bundle.py`, `okf_verify_graph.py` |
+| guarded URL fetch state | `okf_fetch_url.py` |
+| BigQuery discovery/read/sample | optional `okf_bigquery.py` |
+| specialist-agent orchestration | concise Codex skill plus deterministic runner |
+
+Agent Zero profile registries, `/a0` paths, `call_subordinate`, and framework tool shims are intentionally not copied because Codex supplies its own skill and tool orchestration.
+
+## Safety boundaries
+
+- Catalog creation requires both conversational confirmation and `--allow-create`.
+- Raw evidence is never an execution location.
+- Source inventory and copying exclude internal/generated paths.
+- Web crawling is explicit, stateful, and guard-limited.
+- Web-pass writes preserve existing schemas, citations, and unknown metadata.
+- BigQuery remains optional and credential-dependent.

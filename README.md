@@ -4,7 +4,7 @@ Codex skills and plugins maintained by DrMarty.
 
 ## Plugins
 
-- [`okf-manager`](./skills/okf-manager/): progressive Codex port of the Agent Zero OKF Manager plugin.
+- [`okf-manager`](./skills/okf-manager/): Codex-native OKF Manager plugin with an Agent Zero-compatible functional baseline.
 
 ## Repository structure
 
@@ -15,4 +15,4 @@ Codex skills and plugins maintained by DrMarty.
 
 ## Development status
 
-The initial `okf-manager` milestone establishes a valid, skills-first Codex plugin package for local validation. OKF ingestion, validation, indexing, and visualization behavior will be ported incrementally from the [Agent Zero implementation](https://github.com/DrMarty/okf_manager).
+The `okf-manager` local-validation milestone provides a skills-first Codex plugin with the portable catalog, ingestion, validation, indexing, visualization, guarded web, and optional BigQuery operations from the [Agent Zero implementation](https://github.com/DrMarty/okf_manager).

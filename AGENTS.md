@@ -80,9 +80,9 @@ Default section order:
 - Add current and future skill or plugin packages beneath the root `skills/` directory.
 - Keep skill-specific requirements and documentation inside the associated skill folder.
 - Keep root-level requirements and documentation limited to repository-wide concerns.
+- Keep the repository-local Codex marketplace aligned with canonical packages under `skills/`.
 
 ## Child DOX Index
 
 - `skills/AGENTS.md` owns the collection layout and contracts shared by every skill package.
-- Root-owned files and folders: `README.md`, `LICENSE`, `.gitignore`, `Requirements/`, and `Documentation/`.
-
+- Root-owned files and folders: `README.md`, `LICENSE`, `.gitignore`, `.agents/`, `Requirements/`, and `Documentation/`.

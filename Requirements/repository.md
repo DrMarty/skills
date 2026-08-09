@@ -22,3 +22,6 @@ Root requirements and documentation shall describe only repository-wide organiza
 
 Each published package shall remain independently understandable, validatable, versioned, and installable from its package directory.
 
+### R-REPO-006: Local marketplace validation
+
+The repository shall provide a local marketplace definition that exposes packages from their canonical `skills/<package-name>/` directories for Codex installation and pre-publication testing.
