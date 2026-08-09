@@ -54,6 +54,12 @@ BigQuery concept listing, metadata reads, and row sampling shall remain availabl
 
 Automated tests shall exercise source planning, sequential concept writing, evidence cleanup, concept inspection, validation, index generation, visualization, graph verification, and guarded local HTTP ingestion without requiring external services.
 
+### R-OKF-014: Interactive graph workspace
+
+Generated `viz.html` files shall provide the validated interactive workspace used during Test Project catalog development: quarter-width resizable side panels, a searchable hierarchical concept tree with global/type/concept visibility controls, collapsed type branches on first load, concept detail history, safe Markdown body previews, and in-graph zoom, fit, reset, and popup-help controls.
+
+Reset shall unpin every node and refit the graph. Concept and type visibility controls shall update nodes, links, counts, and indeterminate selection states without requiring regeneration.
+
 ## Local-test milestone
 
 The local-test milestone is complete only when the Codex plugin and skill validators pass, the end-to-end worker tests pass, the local marketplace exposes `okf-manager`, Codex reports the plugin as installed, and a fresh Codex task can load the updated skill.

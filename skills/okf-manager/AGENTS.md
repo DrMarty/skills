@@ -24,6 +24,7 @@
 ## Work Guidance
 
 - Prefer deterministic helpers for validation, indexing, and visualization.
+- Treat `skills/okf-project-manager/assets/viz-template.html` as the canonical generated graph UI and cover its durable controls with workflow tests.
 - Keep Agent Zero-specific paths and APIs out of the Codex implementation.
 - Treat custom subagents and MCP integration as optional until a validated use case requires them.
 - Keep worker dependencies in the user-local OKF Manager cache rather than the installed plugin or user project.

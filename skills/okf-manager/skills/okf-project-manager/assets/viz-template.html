@@ -1,0 +1,554 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>OKF Live Self-Graph — __TITLE__</title>
+<script src="https://cdn.jsdelivr.net/npm/d3@7/dist/d3.min.js"></script>
+<style>
+:root { color-scheme: dark; --bg:#0f172a; --panel:#111827; --muted:#94a3b8; --text:#e5e7eb; --accent:#38bdf8; --line:#334155; }
+* { box-sizing: border-box; }
+html, body { width:100%; height:100%; margin:0; overflow:hidden; }
+body { font:14px/1.45 system-ui,-apple-system,Segoe UI,sans-serif; background:var(--bg); color:var(--text); }
+header { height:58px; display:flex; align-items:center; gap:16px; padding:10px 16px; border-bottom:1px solid var(--line); background:#020617; overflow:hidden; }
+header h1 { margin:0; font-size:18px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+header .stats { color:var(--muted); font-size:13px; white-space:nowrap; }
+main { --left-panel-width:clamp(240px, 25vw, 520px); --right-panel-width:clamp(240px, 25vw, 520px); display:grid; grid-template-columns: var(--left-panel-width) 7px minmax(0, 1fr) 7px var(--right-panel-width); height:calc(100vh - 58px); min-height:0; overflow:hidden; }
+aside, section { min-height:0; min-width:0; }
+.sidebar, .detail { background:var(--panel); border-right:1px solid var(--line); overflow:auto; padding:14px; }
+.detail { display:flex; flex-direction:column; min-height:0; }
+.detail { border-right:0; border-left:1px solid var(--line); }
+.detail-nav { display:flex; gap:8px; margin:0 0 12px; padding-bottom:10px; border-bottom:1px solid var(--line); }
+.detail-nav button { flex:1; width:auto; margin:0; }
+.detail-nav button:disabled { cursor:not-allowed; opacity:.45; }
+.resizer { background:#020617; border-left:1px solid var(--line); border-right:1px solid var(--line); cursor:col-resize; min-width:7px; touch-action:none; z-index:6; }
+.resizer:hover, .resizer.dragging { background:#0f3b57; border-color:var(--accent); }
+.graph-wrap { position:relative; min-width:0; min-height:0; overflow:hidden; contain:layout paint; }
+#graph { width:100%; height:100%; display:block; background:radial-gradient(circle at 50% 40%, #172554 0%, #0f172a 48%, #020617 100%); touch-action:none; }
+input, select, button { width:100%; border:1px solid #334155; border-radius:8px; background:#020617; color:var(--text); padding:8px 10px; margin:6px 0 12px; }
+button { cursor:pointer; background:#0f172a; }
+button:hover { border-color:var(--accent); }
+.legend-item { display:flex; align-items:center; gap:8px; margin:6px 0; color:#cbd5e1; cursor:pointer; }
+.legend-item input { width:16px; height:16px; margin:0; padding:0; flex:none; accent-color:var(--accent); }
+.legend-item.disabled { opacity:.5; }
+.legend-global { padding-bottom:8px; margin-bottom:8px; border-bottom:1px solid var(--line); font-weight:600; }
+.swatch { width:11px; height:11px; border-radius:50%; flex:none; }
+.concept-tree { margin-top:6px; border-top:1px solid var(--line); padding-top:8px; }
+.tree-root, .tree-type { margin:2px 0; }
+.tree-root > summary, .tree-type > summary { display:flex; align-items:center; gap:7px; padding:5px 4px; border-radius:6px; cursor:pointer; color:#e5e7eb; list-style:none; }
+.tree-root > summary::-webkit-details-marker, .tree-type > summary::-webkit-details-marker { display:none; }
+.tree-root > summary::before, .tree-type > summary::before { content:'▸'; width:12px; color:var(--muted); flex:none; }
+.tree-root[open] > summary::before, .tree-type[open] > summary::before { content:'▾'; }
+.tree-root > summary:hover, .tree-type > summary:hover { background:#1e293b; }
+.tree-type.disabled > summary { opacity:.55; }
+.concept-tree input { width:16px; height:16px; margin:0; padding:0; flex:none; accent-color:var(--accent); }
+.tree-root > .tree-children { margin-left:14px; }
+.tree-type > .tree-children { margin-left:31px; border-left:1px solid #263449; padding-left:7px; }
+.tree-count { margin-left:auto; color:var(--muted); font-size:11px; }
+.tree-concept { display:flex; align-items:flex-start; gap:7px; padding:3px 4px; border-radius:6px; color:#cbd5e1; }
+.tree-concept:hover, .tree-concept.selected { background:#1e293b; color:white; }
+.tree-concept.filtered-out { opacity:.5; }
+.tree-concept-button { width:auto; flex:1; min-width:0; margin:0; padding:0; border:0; background:transparent; color:inherit; text-align:left; line-height:1.35; }
+.tree-concept-button:hover { border:0; }
+.node-row { padding:7px; border-radius:7px; cursor:pointer; color:#cbd5e1; }
+.node-row:hover, .node-row.active { background:#1e293b; color:white; }
+.badge { display:inline-block; padding:2px 6px; border:1px solid #334155; border-radius:999px; color:#cbd5e1; font-size:11px; margin:2px 4px 2px 0; }
+.detail h2 { margin:0 0 4px; font-size:19px; }
+.detail .id { color:var(--muted); font-family:ui-monospace,monospace; font-size:12px; word-break:break-all; }
+.detail pre { white-space:pre-wrap; background:#020617; padding:10px; border-radius:8px; overflow:auto; border:1px solid #334155; }
+.detail .body-preview { flex:1 1 auto; min-height:180px; max-height:none; margin-bottom:0; padding:12px; overflow:auto; background:#020617; border:1px solid #334155; border-radius:8px; }
+.body-preview > :first-child { margin-top:0; }
+.body-preview > :last-child { margin-bottom:0; }
+.body-preview h1, .body-preview h2, .body-preview h3, .body-preview h4 { margin:1.1em 0 .45em; line-height:1.25; }
+.body-preview h1 { font-size:1.45em; } .body-preview h2 { font-size:1.3em; } .body-preview h3 { font-size:1.15em; }
+.body-preview p { margin:.65em 0; }
+.body-preview ul, .body-preview ol { padding-left:1.6em; }
+.body-preview blockquote { margin:.8em 0; padding:.1em .8em; border-left:3px solid var(--accent); color:#cbd5e1; }
+.body-preview code { padding:.1em .3em; border-radius:4px; background:#172033; font-family:ui-monospace,monospace; }
+.body-preview pre code { padding:0; background:transparent; }
+.body-preview table { width:100%; border-collapse:collapse; margin:.8em 0; font-size:12px; }
+.body-preview th, .body-preview td { padding:6px 8px; border:1px solid #334155; text-align:left; vertical-align:top; }
+.body-preview th { background:#172033; }
+.detail a { color:#7dd3fc; }
+.empty { color:var(--muted); }
+.toolbar { position:absolute; top:12px; right:12px; display:flex; gap:8px; z-index:4; }
+.toolbar button { width:auto; margin:0; opacity:.92; }
+.graph-help { position:absolute; top:54px; right:12px; z-index:5; display:none; width:min(360px, calc(100% - 24px)); padding:10px 12px; border:1px solid #334155; border-radius:8px; background:rgba(2,6,23,.96); color:#cbd5e1; box-shadow:0 12px 28px rgba(0,0,0,.55); font-size:12px; }
+.graph-help.open { display:block; }
+.tooltip { position:fixed; pointer-events:none; background:#020617; border:1px solid #334155; padding:6px 8px; border-radius:7px; color:#e5e7eb; max-width:min(300px, 70vw); display:none; z-index:20; will-change:transform; }
+.node circle { cursor:pointer; stroke:#020617; stroke-width:1.5px; }
+.node.selected circle { stroke:#fff; stroke-width:4px; }
+.node.hover circle { stroke:#bae6fd; stroke-width:3px; }
+.node text { pointer-events:none; fill:#e5e7eb; font-size:12px; paint-order:stroke; stroke:#020617; stroke-width:3px; stroke-linejoin:round; }
+.link { stroke:rgba(148,163,184,.5); stroke-width:1.2px; marker-end:url(#arrow); }
+.link.selected { stroke:#7dd3fc; stroke-width:1.8px; marker-end:url(#arrow-selected); }
+@media (max-width: 1000px) { main { --left-panel-width:240px; grid-template-columns: var(--left-panel-width) 7px minmax(0, 1fr); } .right-resizer { display:none; } .detail { position:absolute; right:0; top:58px; bottom:0; width:min(var(--right-panel-width), 90vw); z-index:5; } }
+</style>
+</head>
+<body>
+<header>
+  <h1>OKF Live Self-Graph — __TITLE__</h1>
+  <div class="stats" id="stats"></div>
+</header>
+<main>
+  <aside class="sidebar">
+    <label>Search concepts</label>
+    <input id="search" placeholder="title, id, tag, description">
+    <div class="concept-tree" id="conceptTree"></div>
+  </aside>
+  <div class="resizer left-resizer" id="leftResizer" title="Resize left panel" aria-label="Resize left panel"></div>
+  <section class="graph-wrap" id="graphWrap">
+    <svg id="graph" role="img" aria-label="OKF knowledge graph" preserveAspectRatio="xMidYMid meet"></svg>
+    <div class="toolbar"><button id="zoomIn" aria-label="Zoom in">+</button><button id="zoomOut" aria-label="Zoom out">−</button><button id="fitBtn">Fit</button><button id="resetBtn">Reset</button><button id="helpBtn" aria-label="Graph help" aria-expanded="false" aria-controls="graphHelp">?</button></div>
+    <div class="graph-help" id="graphHelp" role="dialog" aria-label="Graph help">Live D3 self-graph: nodes are draggable and pinnable. Double-click a node to unpin it; use the mouse wheel to zoom and drag empty space to pan.</div>
+    <div class="tooltip" id="tooltip"></div>
+  </section>
+  <div class="resizer right-resizer" id="rightResizer" title="Resize right panel" aria-label="Resize right panel"></div>
+  <aside class="detail" id="detail"><p class="empty">Select a concept node to inspect frontmatter, body preview, outgoing links, and backlinks.</p></aside>
+</main>
+<script id="bundle-data" type="application/json">__GRAPH_DATA__</script>
+<script>
+(() => {
+if (!window.d3) {
+  document.getElementById('detail').innerHTML = '<p class="empty"><strong>D3 failed to load.</strong> Check network access to https://cdn.jsdelivr.net/npm/d3@7/dist/d3.min.js and reload this page.</p>';
+  return;
+}
+const bundle = JSON.parse(document.getElementById('bundle-data').textContent);
+const palette = bundle.palette || {};
+const nodes = bundle.nodes.map((n, i) => ({...n, idx:i, visible:true, r:9 + Math.min(18, Math.sqrt((n.body||'').length)/9)}));
+const byId = new Map(nodes.map(n => [n.id, n]));
+const links = bundle.edges.map(e => ({source:e.source, target:e.target}));
+const enabledNodes = new Set(nodes.map(n => n.id));
+const visibleTypes = new Set(bundle.types);
+const svg = d3.select('#graph');
+const wrap = document.getElementById('graphWrap');
+const tooltip = document.getElementById('tooltip');
+const root = svg.append('g').attr('class','root');
+const linkLayer = root.append('g').attr('class','links');
+const nodeLayer = root.append('g').attr('class','nodes');
+let selected = null, width = 1, height = 1, resizeTimer = null;
+let navigationHistory = [], navigationIndex = -1;
+
+const defs = svg.append('defs');
+defs.append('marker').attr('id','arrow').attr('viewBox','0 -5 10 10').attr('refX',18).attr('refY',0).attr('markerWidth',6).attr('markerHeight',6).attr('orient','auto').append('path').attr('d','M0,-5L10,0L0,5').attr('fill','rgba(148,163,184,.7)');
+defs.append('marker').attr('id','arrow-selected').attr('viewBox','0 -5 10 10').attr('refX',18).attr('refY',0).attr('markerWidth',6).attr('markerHeight',6).attr('orient','auto').append('path').attr('d','M0,-5L10,0L0,5').attr('fill','#7dd3fc');
+
+const zoom = d3.zoom().scaleExtent([0.1, 5]).on('zoom', event => root.attr('transform', event.transform));
+svg.call(zoom);
+
+const simulation = d3.forceSimulation(nodes)
+  .force('link', d3.forceLink(links).id(d => d.id).distance(125).strength(0.35))
+  .force('charge', d3.forceManyBody().strength(-420))
+  .force('collide', d3.forceCollide().radius(d => d.r + 8).iterations(2))
+  .force('center', d3.forceCenter(width / 2, height / 2))
+  .force('x', d3.forceX(width / 2).strength(0.035))
+  .force('y', d3.forceY(height / 2).strength(0.035))
+  .on('tick', ticked);
+
+let linkSel = linkLayer.selectAll('line');
+let nodeSel = nodeLayer.selectAll('g.node');
+
+function escape(s) { return String(s||'').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function safeMarkdownHref(raw, conceptPath) {
+  const href = String(raw || '').trim();
+  if (!href || href.startsWith('//')) return '';
+  if (/^(https?:|mailto:)/i.test(href)) return escape(href);
+  if (/^[a-z][a-z0-9+.-]*:/i.test(href)) return '';
+  try { return escape(new URL(href, new URL(conceptPath || '', window.location.href)).href); }
+  catch (_) { return ''; }
+}
+function markdownConceptId(raw, conceptPath) {
+  const href = String(raw || '').trim();
+  if (!href || href.startsWith('#') || href.startsWith('//') || /^[a-z][a-z0-9+.-]*:/i.test(href)) return '';
+  try {
+    const catalogRoot = new URL('./', window.location.href);
+    const conceptUrl = new URL(conceptPath || '', catalogRoot);
+    const resolved = new URL(href, conceptUrl);
+    if (resolved.protocol !== catalogRoot.protocol || resolved.host !== catalogRoot.host || !resolved.pathname.startsWith(catalogRoot.pathname)) return '';
+    const relativePath = decodeURIComponent(resolved.pathname.slice(catalogRoot.pathname.length)).replace(/^\/+/, '');
+    if (!relativePath.toLowerCase().endsWith('.md')) return '';
+    const conceptId = relativePath.slice(0, -3);
+    return byId.has(conceptId) ? conceptId : '';
+  } catch (_) { return ''; }
+}
+function inlineMarkdown(text, conceptPath) {
+  const codeTokens = [];
+  const linkTokens = [];
+  let raw = String(text || '');
+  raw = raw.replace(/\x60([^\x60]+)\x60/g, (_, code) => {
+    const token = '@@MDCODE' + codeTokens.length + '@@';
+    codeTokens.push('<code>' + escape(code) + '</code>');
+    return token;
+  });
+  raw = raw.replace(/\[([^\]]+)\]\(([^)\s]+)(?:\s+"[^"]*")?\)/g, (_, label, url) => {
+    const token = '@@MDLINK' + linkTokens.length + '@@';
+    const conceptId = markdownConceptId(url, conceptPath);
+    const href = safeMarkdownHref(url, conceptPath);
+    linkTokens.push(conceptId ? '<a href="#" data-id="' + escape(conceptId) + '">' + escape(label) + '</a>' : (href ? '<a href="' + href + '">' + escape(label) + '</a>' : escape(label)));
+    return token;
+  });
+  let out = escape(raw)
+    .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
+    .replace(/__([^_]+)__/g, '<strong>$1</strong>')
+    .replace(/~~([^~]+)~~/g, '<del>$1</del>')
+    .replace(/(^|[^*])\*([^*]+)\*/g, '$1<em>$2</em>')
+    .replace(/(^|[^_])_([^_]+)_/g, '$1<em>$2</em>');
+  out = out.replace(/@@MDLINK(\d+)@@/g, (_, i) => linkTokens[Number(i)] || '');
+  return out.replace(/@@MDCODE(\d+)@@/g, (_, i) => codeTokens[Number(i)] || '');
+}
+function markdownCells(line) {
+  let value = line.trim();
+  if (value.startsWith('|')) value = value.slice(1);
+  if (value.endsWith('|')) value = value.slice(0, -1);
+  return value.split('|').map(cell => cell.trim());
+}
+function isMarkdownBlock(line, nextLine) {
+  return !line.trim() ||
+    /^\s*\x60{3}/.test(line) ||
+    /^\s{0,3}#{1,6}\s+/.test(line) ||
+    /^\s{0,3}(?:[-*_]\s*){3,}$/.test(line) ||
+    /^\s*>\s?/.test(line) ||
+    /^\s*[-*+]\s+/.test(line) ||
+    /^\s*\d+[.)]\s+/.test(line) ||
+    (line.includes('|') && /^\s*\|?\s*:?-{3,}/.test(nextLine || ''));
+}
+function renderMarkdown(source, conceptPath) {
+  const lines = String(source || '').replace(/\r\n?/g, '\n').split('\n');
+  const html = [];
+  for (let i = 0; i < lines.length;) {
+    const line = lines[i];
+    if (!line.trim()) { i += 1; continue; }
+    if (/^\s*\x60{3}/.test(line)) {
+      const code = [];
+      i += 1;
+      while (i < lines.length && !/^\s*\x60{3}/.test(lines[i])) code.push(lines[i++]);
+      if (i < lines.length) i += 1;
+      html.push('<pre><code>' + escape(code.join('\n')) + '</code></pre>');
+      continue;
+    }
+    const heading = line.match(/^\s{0,3}(#{1,6})\s+(.+)$/);
+    if (heading) {
+      const level = heading[1].length;
+      html.push('<h' + level + '>' + inlineMarkdown(heading[2], conceptPath) + '</h' + level + '>');
+      i += 1; continue;
+    }
+    if (/^\s{0,3}(?:[-*_]\s*){3,}$/.test(line)) {
+      html.push('<hr>'); i += 1; continue;
+    }
+    if (line.includes('|') && i + 1 < lines.length && /^\s*\|?\s*:?-{3,}/.test(lines[i + 1])) {
+      const headers = markdownCells(line);
+      i += 2;
+      const rows = [];
+      while (i < lines.length && lines[i].trim() && lines[i].includes('|')) rows.push(markdownCells(lines[i++]));
+      html.push('<table><thead><tr>' + headers.map(cell => '<th>' + inlineMarkdown(cell, conceptPath) + '</th>').join('') + '</tr></thead><tbody>' +
+        rows.map(row => '<tr>' + row.map(cell => '<td>' + inlineMarkdown(cell, conceptPath) + '</td>').join('') + '</tr>').join('') + '</tbody></table>');
+      continue;
+    }
+    if (/^\s*[-*+]\s+/.test(line)) {
+      const items = [];
+      while (i < lines.length) {
+        const match = lines[i].match(/^\s*[-*+]\s+(.+)$/);
+        if (!match) break;
+        items.push('<li>' + inlineMarkdown(match[1], conceptPath) + '</li>'); i += 1;
+      }
+      html.push('<ul>' + items.join('') + '</ul>'); continue;
+    }
+    if (/^\s*\d+[.)]\s+/.test(line)) {
+      const items = [];
+      while (i < lines.length) {
+        const match = lines[i].match(/^\s*\d+[.)]\s+(.+)$/);
+        if (!match) break;
+        items.push('<li>' + inlineMarkdown(match[1], conceptPath) + '</li>'); i += 1;
+      }
+      html.push('<ol>' + items.join('') + '</ol>'); continue;
+    }
+    if (/^\s*>\s?/.test(line)) {
+      const quoted = [];
+      while (i < lines.length) {
+        const match = lines[i].match(/^\s*>\s?(.*)$/);
+        if (!match) break;
+        quoted.push(match[1]); i += 1;
+      }
+      html.push('<blockquote>' + inlineMarkdown(quoted.join(' '), conceptPath) + '</blockquote>'); continue;
+    }
+    const paragraph = [line.trim()];
+    i += 1;
+    while (i < lines.length && !isMarkdownBlock(lines[i], lines[i + 1])) paragraph.push(lines[i++].trim());
+    html.push('<p>' + inlineMarkdown(paragraph.join(' '), conceptPath) + '</p>');
+  }
+  return html.join('');
+}
+function visibleNodes() { return nodes.filter(n => n.visible); }
+function visibleLinks() { return links.filter(e => e.source.visible && e.target.visible); }
+function linkTouchesSelection(d) { return selected && (d.source === selected || d.target === selected); }
+
+function renderGraph() {
+  linkSel = linkLayer.selectAll('line').data(visibleLinks(), d => d.source.id + '→' + d.target.id).join('line').attr('class', d => 'link' + (linkTouchesSelection(d) ? ' selected' : ''));
+  nodeSel = nodeLayer.selectAll('g.node').data(visibleNodes(), d => d.id).join(
+    enter => {
+      const g = enter.append('g').attr('class','node').call(dragBehavior());
+      g.append('circle').attr('r', d => d.r).attr('fill', d => palette[d.type] || '#94a3b8');
+      g.append('text').attr('x', d => d.r + 5).attr('y', 4).text(d => d.title || d.id);
+      g.on('click', (event,d) => { event.stopPropagation(); select(d); })
+       .on('mouseover', (event,d) => { d3.select(event.currentTarget).classed('hover', true); showTooltip(event, d); })
+       .on('mousemove', (event,d) => showTooltip(event, d))
+       .on('mouseout', (event,d) => { d3.select(event.currentTarget).classed('hover', false); hideTooltip(); })
+       .on('dblclick', (event,d) => { event.stopPropagation(); d.fx = null; d.fy = null; });
+      return g;
+    },
+    update => update,
+    exit => exit.remove()
+  );
+  nodeSel.classed('selected', d => d === selected);
+  simulation.nodes(visibleNodes());
+  simulation.force('link').links(visibleLinks());
+  simulation.alpha(0.35).restart();
+  updateStats();
+}
+
+function ticked() {
+  linkSel.attr('x1', d => d.source.x).attr('y1', d => d.source.y).attr('x2', d => d.target.x).attr('y2', d => d.target.y)
+         .attr('class', d => 'link' + (linkTouchesSelection(d) ? ' selected' : ''));
+  nodeSel.attr('transform', d => `translate(${d.x},${d.y})`);
+}
+
+function dragBehavior() {
+  return d3.drag()
+    .on('start', (event,d) => { if (!event.active) simulation.alphaTarget(0.25).restart(); d.fx = d.x; d.fy = d.y; })
+    .on('drag', (event,d) => { d.fx = event.x; d.fy = event.y; })
+    .on('end', (event,d) => { if (!event.active) simulation.alphaTarget(0); });
+}
+
+function showTooltip(event, d) {
+  tooltip.style.display = 'block';
+  tooltip.textContent = (d.title || d.id) + ' · ' + d.type;
+  const pad = 14, tw = tooltip.offsetWidth || 220, th = tooltip.offsetHeight || 32;
+  const left = Math.min(window.innerWidth - tw - pad, Math.max(pad, event.clientX + 12));
+  const top = Math.min(window.innerHeight - th - pad, Math.max(pad, event.clientY + 12));
+  tooltip.style.transform = `translate(${left}px, ${top}px)`;
+}
+function hideTooltip() { tooltip.style.display = 'none'; }
+
+function fit(duration=250) {
+  const vs = visibleNodes();
+  if (!vs.length) return;
+  const bounds = root.node().getBBox();
+  const dx = Math.max(1, bounds.width), dy = Math.max(1, bounds.height);
+  const x = bounds.x + dx / 2, y = bounds.y + dy / 2;
+  const k = Math.max(0.12, Math.min(2.8, 0.86 / Math.max(dx / width, dy / height)));
+  const t = d3.zoomIdentity.translate(width / 2, height / 2).scale(k).translate(-x, -y);
+  svg.transition().duration(duration).call(zoom.transform, t);
+}
+
+function resize() {
+  const r = wrap.getBoundingClientRect();
+  const nextW = Math.max(1, Math.round(r.width));
+  const nextH = Math.max(1, Math.round(r.height));
+  if (nextW === width && nextH === height) return;
+  width = nextW; height = nextH;
+  svg.attr('viewBox', `0 0 ${width} ${height}`);
+  simulation.force('center', d3.forceCenter(width / 2, height / 2));
+  simulation.force('x', d3.forceX(width / 2).strength(0.035));
+  simulation.force('y', d3.forceY(height / 2).strength(0.035));
+  simulation.alpha(0.2).restart();
+}
+function scheduleResize() {
+  clearTimeout(resizeTimer);
+  resizeTimer = setTimeout(() => { resize(); fit(0); }, 120);
+}
+
+function syncGlobalTypeToggle() {
+  const toggle = document.getElementById('typesToggleAll');
+  const label = document.getElementById('typesToggleAllLabel');
+  if (!toggle || !label) return;
+  const allSelected = enabledNodes.size === nodes.length;
+  const noneSelected = enabledNodes.size === 0;
+  toggle.checked = allSelected;
+  toggle.indeterminate = !allSelected && !noneSelected;
+  label.textContent = 'Types — ' + (allSelected ? 'Select None' : 'Select All');
+  toggle.setAttribute('aria-label', allSelected ? 'Select no concepts' : 'Select all concepts');
+}
+function applyFilters() {
+  const q = document.getElementById('search').value.trim().toLowerCase();
+  for (const n of nodes) {
+    const hay = [n.id,n.title,n.description,n.type,(n.tags||[]).join(' ')].join(' ').toLowerCase();
+    n.visible = enabledNodes.has(n.id) && (!q || hay.includes(q));
+  }
+  if (selected && !selected.visible) select(null);
+  renderList(); renderGraph(); setTimeout(() => fit(150), 60);
+}
+
+function select(n, recordHistory = true) {
+  if (n && recordHistory && navigationHistory[navigationIndex] !== n.id) {
+    navigationHistory = navigationHistory.slice(0, navigationIndex + 1);
+    navigationHistory.push(n.id);
+    navigationIndex = navigationHistory.length - 1;
+  }
+  selected = n;
+  renderDetail(); renderList(); renderGraph();
+}
+function navigateDetailsHistory(offset) {
+  const nextIndex = navigationIndex + offset;
+  if (nextIndex < 0 || nextIndex >= navigationHistory.length) return;
+  const node = byId.get(navigationHistory[nextIndex]);
+  if (!node) return;
+  navigationIndex = nextIndex;
+  select(node, false);
+}
+function detailNavigationHtml() {
+  return '<div class="detail-nav" aria-label="Concept navigation history">' +
+    '<button id="detailBack" type="button"' + (navigationIndex <= 0 ? ' disabled' : '') + '>← Back</button>' +
+    '<button id="detailForward" type="button"' + (navigationIndex < 0 || navigationIndex >= navigationHistory.length - 1 ? ' disabled' : '') + '>Forward →</button>' +
+    '</div>';
+}
+function bindDetailNavigation(el) {
+  const back = el.querySelector('#detailBack');
+  const forward = el.querySelector('#detailForward');
+  if (back) back.addEventListener('click', () => navigateDetailsHistory(-1));
+  if (forward) forward.addEventListener('click', () => navigateDetailsHistory(1));
+}
+function renderDetail() {
+  const el = document.getElementById('detail');
+  if (!selected) {
+    el.innerHTML = detailNavigationHtml() + '<p class="empty">Select a concept node to inspect frontmatter, body preview, outgoing links, and backlinks.</p>';
+    bindDetailNavigation(el);
+    return;
+  }
+  const outgoing = links.filter(e => e.source === selected).map(e => e.target);
+  const incoming = links.filter(e => e.target === selected).map(e => e.source);
+  el.innerHTML = `<h2>${escape(selected.title)}</h2><div class="id">${escape(selected.id)}</div><p>${escape(selected.description)}</p><p><span class="badge">${escape(selected.type)}</span>${(selected.tags||[]).map(t=>`<span class="badge">${escape(t)}</span>`).join('')}</p>${selected.resource?`<p><strong>Resource:</strong><br><span class="id">${escape(selected.resource)}</span></p>`:''}<h3>Outgoing links</h3>${outgoing.length?'<ul>'+outgoing.map(n=>`<li><a href="#" data-id="${escape(n.id)}">${escape(n.title||n.id)}</a></li>`).join('')+'</ul>':'<p class="empty">None</p>'}<h3>Backlinks</h3>${incoming.length?'<ul>'+incoming.map(n=>`<li><a href="#" data-id="${escape(n.id)}">${escape(n.title||n.id)}</a></li>`).join('')+'</ul>':'<p class="empty">None</p>'}<h3>Body preview</h3><pre class="body-preview">${escape((selected.body||'').slice(0,2500))}</pre>`;
+  el.insertAdjacentHTML('afterbegin', detailNavigationHtml());
+  bindDetailNavigation(el);
+  const bodyPreview = el.querySelector('.body-preview');
+  if (bodyPreview) bodyPreview.outerHTML = '<div class="body-preview">' + renderMarkdown((selected.body || '').slice(0, 2500), selected.path) + '</div>';
+  el.querySelectorAll('a[data-id]').forEach(a => a.addEventListener('click', ev => { ev.preventDefault(); const n = byId.get(a.dataset.id); if (n) select(n); }));
+}
+function renderList() {
+  const tree = document.getElementById('conceptTree');
+  if (!tree) return;
+  visibleTypes.clear();
+  for (const type of bundle.types) {
+    const members = nodes.filter(n => n.type === type);
+    const enabledCount = members.filter(n => enabledNodes.has(n.id)).length;
+    if (enabledCount) visibleTypes.add(type);
+    const toggle = Array.from(tree.querySelectorAll('.type-toggle')).find(item => item.dataset.type === type);
+    const branch = toggle ? toggle.closest('.tree-type') : null;
+    if (toggle) {
+      toggle.checked = enabledCount === members.length;
+      toggle.indeterminate = enabledCount > 0 && enabledCount < members.length;
+    }
+    if (branch) {
+      branch.classList.toggle('disabled', enabledCount === 0);
+      const count = branch.querySelector('.tree-count');
+      if (count) count.textContent = enabledCount + '/' + members.length;
+    }
+  }
+  tree.querySelectorAll('.tree-concept').forEach(row => {
+    const n = byId.get(row.dataset.id);
+    if (!n) return;
+    const toggle = row.querySelector('.concept-toggle');
+    if (toggle) toggle.checked = enabledNodes.has(n.id);
+    row.classList.toggle('selected', n === selected);
+    row.classList.toggle('filtered-out', !n.visible);
+  });
+  syncGlobalTypeToggle();
+}
+function updateStats() { document.getElementById('stats').textContent = `${visibleNodes().length}/${nodes.length} concepts · ${visibleLinks().length}/${links.length} links · ${visibleTypes.size}/${bundle.types.length} types`; }
+function initPanelResizers() {
+  const main = document.querySelector('main');
+  const left = document.getElementById('leftResizer');
+  const right = document.getElementById('rightResizer');
+  const clamp = (v, min, max) => Math.max(min, Math.min(max, v));
+  const startDrag = (event, side) => {
+    event.preventDefault();
+    const handle = side === 'left' ? left : right;
+    handle.classList.add('dragging');
+    const move = ev => {
+      const rect = main.getBoundingClientRect();
+      if (side === 'left') {
+        const rightWidth = document.querySelector('.detail').getBoundingClientRect().width || rect.width * 0.25;
+        const w = clamp(ev.clientX - rect.left, 120, Math.max(120, rect.width - rightWidth - 14));
+        main.style.setProperty('--left-panel-width', `${Math.round(w)}px`);
+      } else {
+        const leftWidth = document.querySelector('.sidebar').getBoundingClientRect().width || rect.width * 0.25;
+        const w = clamp(rect.right - ev.clientX, 120, Math.max(120, rect.width - leftWidth - 14));
+        main.style.setProperty('--right-panel-width', `${Math.round(w)}px`);
+      }
+      scheduleResize();
+    };
+    const up = () => {
+      handle.classList.remove('dragging');
+      window.removeEventListener('pointermove', move);
+      window.removeEventListener('pointerup', up);
+      scheduleResize();
+    };
+    window.addEventListener('pointermove', move);
+    window.addEventListener('pointerup', up);
+  };
+  if (left) left.addEventListener('pointerdown', ev => startDrag(ev, 'left'));
+  if (right) right.addEventListener('pointerdown', ev => startDrag(ev, 'right'));
+}
+
+function initUi() {
+  const tree = document.getElementById('conceptTree');
+  tree.innerHTML = '<details class="tree-root" open><summary><input id="typesToggleAll" type="checkbox" checked><strong id="typesToggleAllLabel">Types — Select None</strong></summary><div class="tree-children">' +
+    bundle.types.map(type => {
+      const members = nodes.filter(n => n.type === type);
+      return '<details class="tree-type" data-type="' + escape(type) + '"><summary><input class="type-toggle" type="checkbox" data-type="' + escape(type) + '" checked><span class="swatch" style="background:' + (palette[type] || '#94a3b8') + '"></span><span>' + escape(type) + '</span><span class="tree-count">' + members.length + '/' + members.length + '</span></summary><div class="tree-children">' +
+        members.map(n => '<div class="tree-concept" data-id="' + escape(n.id) + '"><input class="concept-toggle" type="checkbox" aria-label="Show ' + escape(n.title || n.id) + '" checked><button class="tree-concept-button" type="button">' + escape(n.title || n.id) + '</button></div>').join('') +
+        '</div></details>';
+    }).join('') + '</div></details>';
+  tree.querySelectorAll('summary input').forEach(toggle => toggle.addEventListener('click', event => event.stopPropagation()));
+  document.getElementById('typesToggleAll').addEventListener('change', event => {
+    enabledNodes.clear();
+    if (event.currentTarget.checked) nodes.forEach(n => enabledNodes.add(n.id));
+    applyFilters();
+  });
+  tree.querySelectorAll('.type-toggle').forEach(toggle => toggle.addEventListener('change', () => {
+    nodes.filter(n => n.type === toggle.dataset.type).forEach(n => {
+      if (toggle.checked) enabledNodes.add(n.id); else enabledNodes.delete(n.id);
+    });
+    applyFilters();
+  }));
+  tree.querySelectorAll('.concept-toggle').forEach(toggle => toggle.addEventListener('change', () => {
+    const row = toggle.closest('.tree-concept');
+    if (toggle.checked) enabledNodes.add(row.dataset.id); else enabledNodes.delete(row.dataset.id);
+    applyFilters();
+  }));
+  tree.querySelectorAll('.tree-concept-button').forEach(button => button.addEventListener('click', () => {
+    const n = byId.get(button.closest('.tree-concept').dataset.id);
+    if (n) select(n);
+  }));
+  document.getElementById('search').addEventListener('input', applyFilters);
+  document.getElementById('fitBtn').onclick = () => fit();
+  document.getElementById('resetBtn').onclick = () => {
+    nodes.forEach(n => { n.fx = null; n.fy = null; });
+    simulation.alpha(0.35).restart();
+    fit(160);
+    setTimeout(() => fit(180), 350);
+  };
+  document.getElementById('zoomIn').onclick = () => svg.transition().duration(160).call(zoom.scaleBy, 1.2);
+  document.getElementById('zoomOut').onclick = () => svg.transition().duration(160).call(zoom.scaleBy, 0.83);
+  const helpBtn = document.getElementById('helpBtn');
+  const graphHelp = document.getElementById('graphHelp');
+  const setHelpOpen = open => {
+    graphHelp.classList.toggle('open', open);
+    helpBtn.setAttribute('aria-expanded', String(open));
+  };
+  helpBtn.onclick = event => {
+    event.stopPropagation();
+    setHelpOpen(!graphHelp.classList.contains('open'));
+  };
+  document.addEventListener('click', event => {
+    if (!graphHelp.contains(event.target) && event.target !== helpBtn) setHelpOpen(false);
+  });
+  document.addEventListener('keydown', event => { if (event.key === 'Escape') setHelpOpen(false); });
+  svg.on('click', () => select(null));
+}
+
+initUi(); initPanelResizers(); resize(); renderDetail(); renderList(); renderGraph(); setTimeout(() => fit(0), 250);
+if ('ResizeObserver' in window) new ResizeObserver(scheduleResize).observe(wrap); else window.addEventListener('resize', scheduleResize);
+})();
+</script>
+</body>
+</html>
