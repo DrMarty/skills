@@ -1,4 +1,5 @@
-# Documentation Index
+# Repository Documentation Index
 
-- [`okf-manager/`](./okf-manager/): architecture and porting documentation for the OKF Manager Codex plugin.
+- [`repository-architecture.md`](./repository-architecture.md): repository layout and package ownership boundaries.
 
+Skill-specific documentation is stored under `skills/<skill-name>/Documentation/`.

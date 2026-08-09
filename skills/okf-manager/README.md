@@ -14,5 +14,4 @@ Version `0.1.0` establishes the skills-first Codex package and supports local st
 4. Graph generation and local display.
 5. Publication hardening and distribution metadata.
 
-See the repository [`Requirements`](../Requirements/Index.md) and [`Documentation`](../Documentation/Index.md) indexes for the governing requirements and architecture.
-
+See this package's [`Requirements`](./Requirements/Index.md) and [`Documentation`](./Documentation/Index.md) indexes for the governing requirements and architecture.

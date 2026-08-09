@@ -15,6 +15,8 @@ okf-manager/
 
 The skill is the workflow and policy layer. Deterministic helpers will be added beneath the skill as individual Agent Zero behaviors are ported and locally validated.
 
+Package-specific requirements and documentation remain inside the `okf-manager` directory so the package stays self-contained within the multi-skill repository.
+
 ## Porting boundaries
 
 - Agent Zero's `plugin.yaml` is replaced by `.codex-plugin/plugin.json`.
@@ -32,4 +34,3 @@ The skill is the workflow and policy layer. Deterministic helpers will be added 
 4. Port evidence ingestion and provenance handling.
 5. Port graph generation and local display.
 6. Harden metadata, testing, and documentation for publication.
-

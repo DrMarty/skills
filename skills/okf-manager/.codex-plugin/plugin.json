@@ -6,7 +6,7 @@
     "name": "DrMarty",
     "url": "https://github.com/DrMarty"
   },
-  "homepage": "https://github.com/DrMarty/skills/tree/master/okf-manager",
+  "homepage": "https://github.com/DrMarty/skills/tree/master/skills/okf-manager",
   "repository": "https://github.com/DrMarty/skills",
   "license": "MIT",
   "keywords": [
@@ -25,7 +25,7 @@
     "capabilities": [
       "Write"
     ],
-    "websiteURL": "https://github.com/DrMarty/skills/tree/master/okf-manager",
+    "websiteURL": "https://github.com/DrMarty/skills/tree/master/skills/okf-manager",
     "defaultPrompt": "Inspect this project's OKF catalog and report its current state."
   }
 }
