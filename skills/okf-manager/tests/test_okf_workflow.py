@@ -105,7 +105,22 @@ class OkfWorkflowTest(unittest.TestCase):
         self.assertGreaterEqual(graph["concepts"], 2)
         self.assertGreaterEqual(graph["edges"], 1)
         self.assertTrue((self.catalog / "index.md").exists())
-        self.assertTrue((self.catalog / "viz.html").exists())
+        viz = (self.catalog / "viz.html").read_text(encoding="utf-8")
+        self.assertIn('--left-panel-width:clamp(240px, 25vw, 520px)', viz)
+        self.assertIn('id="conceptTree"', viz)
+        self.assertIn('id="typesToggleAll"', viz)
+        self.assertIn('class="tree-type" data-type=', viz)
+        self.assertNotIn('class="tree-type" data-type="System" open', viz)
+        self.assertIn('class="concept-toggle"', viz)
+        self.assertNotIn('id="typeFilter"', viz)
+        self.assertIn('id="detailBack"', viz)
+        self.assertIn('id="detailForward"', viz)
+        self.assertIn('function renderMarkdown(', viz)
+        self.assertIn('id="fitBtn"', viz)
+        self.assertIn('id="resetBtn"', viz)
+        self.assertIn('id="helpBtn"', viz)
+        self.assertIn('nodes.forEach(n => { n.fx = null; n.fy = null; });', viz)
+        self.assertIn("event.key === 'Escape'", viz)
         self.assertTrue((self.catalog.parent / "raw" / "demo" / "README.md").exists())
 
     def test_guarded_web_fetch(self) -> None:
@@ -145,4 +160,3 @@ class OkfWorkflowTest(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
-

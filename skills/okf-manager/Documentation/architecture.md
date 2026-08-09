@@ -12,13 +12,18 @@ okf-manager/
 └── skills/okf-project-manager/
     ├── SKILL.md
     ├── agents/openai.yaml
+    ├── assets/viz-template.html
     ├── references/
     ├── requirements-worker.txt
     ├── requirements-bigquery.txt
     └── scripts/
 ```
 
-The skill owns workflow and policy. References provide progressive disclosure. Scripts provide low-variance filesystem, ingestion, validation, indexing, graph, guarded network, and optional BigQuery operations.
+The skill owns workflow and policy. References provide progressive disclosure. Scripts provide low-variance filesystem, ingestion, validation, indexing, graph, guarded network, and optional BigQuery operations. `assets/viz-template.html` is the canonical interactive graph shell; `okf_visualize_bundle.py` injects escaped bundle identity and serialized graph data into its placeholders.
+
+## Visualization interface
+
+The graph shell uses three resizable desktop regions: a searchable concept tree, a D3 graph canvas, and concept details. The tree has global, type, and concept visibility controls with live counts and starts with only its top-level Types branch expanded. The detail panel renders a safe Markdown subset and maintains back/forward concept history. Canvas controls provide zoom, fit, reset-unpin-refit, and dismissible help. Generated graph data remains embedded in `viz.html`; D3 is loaded from jsDelivr when the page opens.
 
 ## Runtime
 

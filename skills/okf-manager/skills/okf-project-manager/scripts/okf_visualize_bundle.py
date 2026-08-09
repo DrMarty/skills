@@ -144,6 +144,13 @@ def _doc(path: Path):
 def _render_html(bundle_name: str, graph: dict) -> str:
     data = json.dumps(graph, ensure_ascii=False)
     title = html.escape(bundle_name)
+    template_path = Path(__file__).resolve().parent.parent / "assets" / "viz-template.html"
+    if template_path.is_file():
+        template = template_path.read_text(encoding="utf-8")
+        return template.replace("__TITLE__", title).replace("__GRAPH_DATA__", data.replace("</", "<\\/"))
+
+    # Retain the embedded baseline as a fallback when the script is copied and
+    # run without the rest of its skill package.
     template = """<!doctype html>
 <html lang="en">
 <head>
