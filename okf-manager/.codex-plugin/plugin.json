@@ -1,0 +1,31 @@
+{
+  "name": "okf-manager",
+  "version": "0.1.0",
+  "description": "Manage portable Open Knowledge Format catalogs with provenance-aware workflows and deterministic validation.",
+  "author": {
+    "name": "DrMarty",
+    "url": "https://github.com/DrMarty"
+  },
+  "homepage": "https://github.com/DrMarty/skills/tree/main/okf-manager",
+  "repository": "https://github.com/DrMarty/skills",
+  "license": "MIT",
+  "keywords": [
+    "okf",
+    "knowledge-catalog",
+    "provenance",
+    "visualization"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "OKF Manager",
+    "shortDescription": "Build and maintain portable OKF catalogs.",
+    "longDescription": "Create, validate, index, and visualize provenance-aware Open Knowledge Format catalogs. This Codex port is under progressive local development.",
+    "developerName": "DrMarty",
+    "category": "Productivity",
+    "capabilities": [
+      "Write"
+    ],
+    "websiteURL": "https://github.com/DrMarty/skills/tree/main/okf-manager",
+    "defaultPrompt": "Inspect this project's OKF catalog and report its current state."
+  }
+}
