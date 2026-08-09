@@ -27,6 +27,7 @@ Start a new Codex task so the installed skill metadata is loaded. During develop
 
 - `Use $okf-project-manager to inspect the OKF catalog in this workspace.`
 - `Use $okf-project-manager to validate this catalog and report broken links.`
+- `Use $okf-project-manager to regenerate the catalog glossary and show the common terms and acronyms.`
 - `Use $okf-project-manager to ingest these source files into a new OKF catalog.`
 - `Use $okf-project-manager to regenerate and show the catalog graph.`
 

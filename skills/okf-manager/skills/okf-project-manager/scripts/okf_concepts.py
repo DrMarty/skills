@@ -15,7 +15,7 @@ REQUIRED = ("type", "title", "description", "timestamp")
 ORDER = ("type", "resource", "title", "description", "tags", "timestamp")
 SEGMENT_RE = re.compile(r"[A-Za-z0-9_][A-Za-z0-9_.-]*")
 FIELD_RE = re.compile(r"`([A-Za-z_][A-Za-z0-9_.]*)`")
-RESERVED = {"index", "log"}
+RESERVED = {"index", "log", "glossary"}
 
 
 def split_document(text: str) -> tuple[dict, str]:
@@ -37,7 +37,7 @@ def concept_id(value: str) -> str:
         raise ValueError("concept_id is required")
     for part in parts:
         if part in RESERVED:
-            raise ValueError("reserved filenames index.md and log.md cannot be concept documents")
+            raise ValueError("reserved filenames index.md, log.md, and glossary.md cannot be concept documents")
         if not SEGMENT_RE.fullmatch(part):
             raise ValueError(f"invalid concept id segment: {part!r}")
     return "/".join(parts)
@@ -87,7 +87,7 @@ def citation_count(body: str) -> int:
 def list_concepts(catalog: Path) -> list[dict]:
     concepts = []
     for path in sorted(catalog.rglob("*.md")):
-        if path.name in {"index.md", "log.md"}:
+        if path.name in {"index.md", "log.md", "glossary.md"}:
             continue
         frontmatter, _ = split_document(path.read_text(encoding="utf-8", errors="replace"))
         concepts.append({
@@ -192,4 +192,3 @@ def main(argv: list[str]) -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main(sys.argv))
-

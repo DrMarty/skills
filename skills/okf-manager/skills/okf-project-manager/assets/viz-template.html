@@ -15,12 +15,51 @@ header h1 { margin:0; font-size:18px; white-space:nowrap; overflow:hidden; text-
 header .stats { color:var(--muted); font-size:13px; white-space:nowrap; }
 main { --left-panel-width:clamp(240px, 25vw, 520px); --right-panel-width:clamp(240px, 25vw, 520px); display:grid; grid-template-columns: var(--left-panel-width) 7px minmax(0, 1fr) 7px var(--right-panel-width); height:calc(100vh - 58px); min-height:0; overflow:hidden; }
 aside, section { min-height:0; min-width:0; }
-.sidebar, .detail { background:var(--panel); border-right:1px solid var(--line); overflow:auto; padding:14px; }
+.sidebar, .detail { background:var(--panel); border-right:1px solid var(--line); }
+.sidebar { --top-section-size:58%; display:grid; grid-template-rows:minmax(96px, var(--top-section-size)) 7px minmax(96px, 1fr); overflow:hidden; padding:0; }
+.sidebar.top-collapsed { grid-template-rows:auto 7px minmax(96px, 1fr); }
+.sidebar.bottom-collapsed { grid-template-rows:minmax(96px, 1fr) 7px auto; }
+.sidebar.top-collapsed.bottom-collapsed { grid-template-rows:auto 7px auto; align-content:start; }
+.sidebar-section { display:flex; flex-direction:column; min-height:0; overflow:hidden; }
+.sidebar-section-header { display:flex; align-items:center; gap:8px; min-height:38px; padding:7px 10px; border:0; border-radius:0; border-bottom:1px solid var(--line); background:#0b1220; color:var(--text); margin:0; text-align:left; font-weight:600; }
+.sidebar-section-header:hover { border-color:var(--line); background:#172033; }
+.sidebar-section-header::before { content:'▾'; width:12px; color:var(--muted); flex:none; }
+.sidebar-section.collapsed .sidebar-section-header::before { content:'▸'; }
+.sidebar-section-body { min-height:0; overflow:auto; padding:10px 14px 14px; }
+.sidebar-section.collapsed .sidebar-section-body { display:none; }
+.sidebar-splitter { min-height:7px; background:#020617; border-top:1px solid var(--line); border-bottom:1px solid var(--line); cursor:row-resize; touch-action:none; z-index:6; }
+.sidebar-splitter:hover, .sidebar-splitter.dragging { background:#0f3b57; border-color:var(--accent); }
+.sidebar.top-collapsed .sidebar-splitter, .sidebar.bottom-collapsed .sidebar-splitter { cursor:default; }
+.glossary-empty { color:var(--muted); margin:4px 0; }
+.glossary-entry { padding:8px 2px; border-bottom:1px solid #263449; }
+.glossary-entry:last-child { border-bottom:0; }
+.glossary-term { color:#e5e7eb; font-weight:650; }
+.glossary-meaning { color:#cbd5e1; margin-top:2px; font-size:12px; }
+.glossary-sources { display:flex; flex-wrap:wrap; gap:4px 8px; margin-top:5px; }
+.glossary-link { width:auto; border:0; border-radius:0; margin:0; padding:0; background:transparent; color:#7dd3fc; font-size:11px; text-align:left; }
+.glossary-link:hover { border:0; text-decoration:underline; }
 .detail { display:flex; flex-direction:column; min-height:0; }
+.detail { overflow:hidden; padding:0; }
 .detail { border-right:0; border-left:1px solid var(--line); }
+.detail-empty { padding:14px; }
+.detail-overview { flex:0 1 auto; max-height:45%; overflow:auto; padding:14px 14px 8px; border-bottom:1px solid var(--line); }
 .detail-nav { display:flex; gap:8px; margin:0 0 12px; padding-bottom:10px; border-bottom:1px solid var(--line); }
 .detail-nav button { flex:1; width:auto; margin:0; }
 .detail-nav button:disabled { cursor:not-allowed; opacity:.45; }
+.detail-sections { flex:1 1 auto; min-height:0; display:grid; grid-template-rows:minmax(38px, 1fr) 7px minmax(38px, 1fr) 7px minmax(38px, 2fr); overflow:hidden; }
+.detail-section { display:flex; flex-direction:column; min-height:0; overflow:hidden; }
+.detail-section.collapsed .detail-section-body { display:none; }
+.detail-section-header { display:flex; align-items:center; gap:8px; min-height:38px; width:100%; margin:0; padding:7px 10px; border:0; border-radius:0; border-bottom:1px solid var(--line); background:#0b1220; color:var(--text); text-align:left; font-weight:600; }
+.detail-section-header:hover { border-color:var(--line); background:#172033; }
+.detail-section-header::before { content:'▾'; width:12px; color:var(--muted); flex:none; }
+.detail-section.collapsed .detail-section-header::before { content:'▸'; }
+.detail-section-count { margin-left:auto; color:var(--muted); font-size:11px; font-weight:400; }
+.detail-section-body { min-height:0; overflow:auto; padding:8px 14px 12px; }
+.detail-section-body > :first-child { margin-top:0; }
+.detail-section-body > :last-child { margin-bottom:0; }
+.detail-splitter { min-height:7px; background:#020617; border-top:1px solid var(--line); border-bottom:1px solid var(--line); cursor:row-resize; touch-action:none; z-index:6; }
+.detail-splitter:hover, .detail-splitter.dragging { background:#0f3b57; border-color:var(--accent); }
+.detail-splitter.disabled { cursor:default; }
 .resizer { background:#020617; border-left:1px solid var(--line); border-right:1px solid var(--line); cursor:col-resize; min-width:7px; touch-action:none; z-index:6; }
 .resizer:hover, .resizer.dragging { background:#0f3b57; border-color:var(--accent); }
 .graph-wrap { position:relative; min-width:0; min-height:0; overflow:hidden; contain:layout paint; }
@@ -56,7 +95,7 @@ button:hover { border-color:var(--accent); }
 .detail h2 { margin:0 0 4px; font-size:19px; }
 .detail .id { color:var(--muted); font-family:ui-monospace,monospace; font-size:12px; word-break:break-all; }
 .detail pre { white-space:pre-wrap; background:#020617; padding:10px; border-radius:8px; overflow:auto; border:1px solid #334155; }
-.detail .body-preview { flex:1 1 auto; min-height:180px; max-height:none; margin-bottom:0; padding:12px; overflow:auto; background:#020617; border:1px solid #334155; border-radius:8px; }
+.detail .body-preview { min-height:0; margin:0; padding:10px 14px 14px; overflow:auto; background:#020617; border:0; border-radius:0; }
 .body-preview > :first-child { margin-top:0; }
 .body-preview > :last-child { margin-bottom:0; }
 .body-preview h1, .body-preview h2, .body-preview h3, .body-preview h4 { margin:1.1em 0 .45em; line-height:1.25; }
@@ -91,10 +130,22 @@ button:hover { border-color:var(--accent); }
   <div class="stats" id="stats"></div>
 </header>
 <main>
-  <aside class="sidebar">
-    <label>Search concepts</label>
-    <input id="search" placeholder="title, id, tag, description">
-    <div class="concept-tree" id="conceptTree"></div>
+  <aside class="sidebar" id="sidebar">
+    <section class="sidebar-section" id="navigationSection">
+      <button class="sidebar-section-header" id="navigationToggle" type="button" aria-expanded="true" aria-controls="navigationBody">Search Concepts and Navigation Tree</button>
+      <div class="sidebar-section-body" id="navigationBody">
+        <label for="search">Search concepts</label>
+        <input id="search" placeholder="title, id, tag, description">
+        <div class="concept-tree" id="conceptTree"></div>
+      </div>
+    </section>
+    <div class="sidebar-splitter" id="sidebarSplitter" title="Resize navigation and glossary sections" aria-label="Resize navigation and glossary sections"></div>
+    <section class="sidebar-section" id="glossarySection">
+      <button class="sidebar-section-header" id="glossaryToggle" type="button" aria-expanded="true" aria-controls="glossaryBody">Glossary</button>
+      <div class="sidebar-section-body" id="glossaryBody">
+        <div id="glossaryList"></div>
+      </div>
+    </section>
   </aside>
   <div class="resizer left-resizer" id="leftResizer" title="Resize left panel" aria-label="Resize left panel"></div>
   <section class="graph-wrap" id="graphWrap">
@@ -128,6 +179,8 @@ const linkLayer = root.append('g').attr('class','links');
 const nodeLayer = root.append('g').attr('class','nodes');
 let selected = null, width = 1, height = 1, resizeTimer = null;
 let navigationHistory = [], navigationIndex = -1;
+const detailSectionState = { weights:[1, 1, 2], collapsed:[false, false, false] };
+let detailResizeObserver = null;
 
 const defs = svg.append('defs');
 defs.append('marker').attr('id','arrow').attr('viewBox','0 -5 10 10').attr('refX',18).attr('refY',0).attr('markerWidth',6).attr('markerHeight',6).attr('orient','auto').append('path').attr('d','M0,-5L10,0L0,5').attr('fill','rgba(148,163,184,.7)');
@@ -407,20 +460,104 @@ function bindDetailNavigation(el) {
   if (back) back.addEventListener('click', () => navigateDetailsHistory(-1));
   if (forward) forward.addEventListener('click', () => navigateDetailsHistory(1));
 }
+function detailSectionHtml(index, id, label, count, body, bodyClass = '') {
+  const collapsed = detailSectionState.collapsed[index];
+  return '<section class="detail-section' + (collapsed ? ' collapsed' : '') + '" id="' + id + 'Section" data-index="' + index + '">' +
+    '<button class="detail-section-header" id="' + id + 'Toggle" type="button" aria-expanded="' + String(!collapsed) + '" aria-controls="' + id + 'Body">' +
+    escape(label) + '<span class="detail-section-count">' + escape(count) + '</span></button>' +
+    '<div class="detail-section-body' + (bodyClass ? ' ' + bodyClass : '') + '" id="' + id + 'Body">' + body + '</div></section>';
+}
+function layoutDetailSections(container) {
+  if (!container) return;
+  const sections = Array.from(container.querySelectorAll('.detail-section'));
+  const splitters = Array.from(container.querySelectorAll('.detail-splitter'));
+  const total = container.getBoundingClientRect().height;
+  if (!total) return;
+  const splitterHeight = 7;
+  const collapsedHeight = 38;
+  const expanded = sections.map((_, index) => index).filter(index => !detailSectionState.collapsed[index]);
+  const available = Math.max(0, total - splitters.length * splitterHeight - detailSectionState.collapsed.filter(Boolean).length * collapsedHeight);
+  const weightTotal = expanded.reduce((sum, index) => sum + Math.max(1, detailSectionState.weights[index]), 0) || 1;
+  const sectionHeights = sections.map((_, index) => detailSectionState.collapsed[index]
+    ? collapsedHeight
+    : Math.max(collapsedHeight, available * Math.max(1, detailSectionState.weights[index]) / weightTotal));
+  container.style.gridTemplateRows = sectionHeights[0] + 'px ' + splitterHeight + 'px ' + sectionHeights[1] + 'px ' + splitterHeight + 'px ' + sectionHeights[2] + 'px';
+  splitters.forEach(splitter => {
+    const before = Number(splitter.dataset.before);
+    const after = Number(splitter.dataset.after);
+    splitter.classList.toggle('disabled', detailSectionState.collapsed[before] || detailSectionState.collapsed[after]);
+  });
+}
+function initDetailSections(el) {
+  const container = el.querySelector('#detailSections');
+  if (!container) return;
+  const sections = Array.from(container.querySelectorAll('.detail-section'));
+  sections.forEach((section, index) => {
+    const toggle = section.querySelector('.detail-section-header');
+    toggle.addEventListener('click', () => {
+      detailSectionState.collapsed[index] = !detailSectionState.collapsed[index];
+      section.classList.toggle('collapsed', detailSectionState.collapsed[index]);
+      toggle.setAttribute('aria-expanded', String(!detailSectionState.collapsed[index]));
+      layoutDetailSections(container);
+    });
+  });
+  container.querySelectorAll('.detail-splitter').forEach(splitter => splitter.addEventListener('pointerdown', event => {
+    const before = Number(splitter.dataset.before);
+    const after = Number(splitter.dataset.after);
+    if (detailSectionState.collapsed[before] || detailSectionState.collapsed[after]) return;
+    event.preventDefault();
+    sections.forEach((section, index) => {
+      if (!detailSectionState.collapsed[index]) detailSectionState.weights[index] = section.getBoundingClientRect().height;
+    });
+    const startY = event.clientY;
+    const startBefore = detailSectionState.weights[before];
+    const startAfter = detailSectionState.weights[after];
+    const pairTotal = startBefore + startAfter;
+    splitter.classList.add('dragging');
+    const move = ev => {
+      const beforeSize = Math.max(64, Math.min(pairTotal - 64, startBefore + ev.clientY - startY));
+      detailSectionState.weights[before] = beforeSize;
+      detailSectionState.weights[after] = pairTotal - beforeSize;
+      layoutDetailSections(container);
+    };
+    const up = () => {
+      splitter.classList.remove('dragging');
+      window.removeEventListener('pointermove', move);
+      window.removeEventListener('pointerup', up);
+    };
+    window.addEventListener('pointermove', move);
+    window.addEventListener('pointerup', up);
+  }));
+  if ('ResizeObserver' in window) {
+    if (detailResizeObserver) detailResizeObserver.disconnect();
+    detailResizeObserver = new ResizeObserver(() => layoutDetailSections(container));
+    detailResizeObserver.observe(container);
+  }
+  requestAnimationFrame(() => layoutDetailSections(container));
+}
 function renderDetail() {
   const el = document.getElementById('detail');
   if (!selected) {
-    el.innerHTML = detailNavigationHtml() + '<p class="empty">Select a concept node to inspect frontmatter, body preview, outgoing links, and backlinks.</p>';
+    if (detailResizeObserver) detailResizeObserver.disconnect();
+    el.innerHTML = '<div class="detail-empty">' + detailNavigationHtml() + '<p class="empty">Select a concept node to inspect frontmatter, body preview, outgoing links, and backlinks.</p></div>';
     bindDetailNavigation(el);
     return;
   }
   const outgoing = links.filter(e => e.source === selected).map(e => e.target);
   const incoming = links.filter(e => e.target === selected).map(e => e.source);
-  el.innerHTML = `<h2>${escape(selected.title)}</h2><div class="id">${escape(selected.id)}</div><p>${escape(selected.description)}</p><p><span class="badge">${escape(selected.type)}</span>${(selected.tags||[]).map(t=>`<span class="badge">${escape(t)}</span>`).join('')}</p>${selected.resource?`<p><strong>Resource:</strong><br><span class="id">${escape(selected.resource)}</span></p>`:''}<h3>Outgoing links</h3>${outgoing.length?'<ul>'+outgoing.map(n=>`<li><a href="#" data-id="${escape(n.id)}">${escape(n.title||n.id)}</a></li>`).join('')+'</ul>':'<p class="empty">None</p>'}<h3>Backlinks</h3>${incoming.length?'<ul>'+incoming.map(n=>`<li><a href="#" data-id="${escape(n.id)}">${escape(n.title||n.id)}</a></li>`).join('')+'</ul>':'<p class="empty">None</p>'}<h3>Body preview</h3><pre class="body-preview">${escape((selected.body||'').slice(0,2500))}</pre>`;
-  el.insertAdjacentHTML('afterbegin', detailNavigationHtml());
+  const outgoingHtml = outgoing.length ? '<ul>' + outgoing.map(n=>`<li><a href="#" data-id="${escape(n.id)}">${escape(n.title||n.id)}</a></li>`).join('') + '</ul>' : '<p class="empty">None</p>';
+  const incomingHtml = incoming.length ? '<ul>' + incoming.map(n=>`<li><a href="#" data-id="${escape(n.id)}">${escape(n.title||n.id)}</a></li>`).join('') + '</ul>' : '<p class="empty">None</p>';
+  const bodyHtml = renderMarkdown((selected.body || '').slice(0, 2500), selected.path) || '<p class="empty">No body content.</p>';
+  el.innerHTML = '<div class="detail-overview">' + detailNavigationHtml() +
+    `<h2>${escape(selected.title)}</h2><div class="id">${escape(selected.id)}</div><p>${escape(selected.description)}</p><p><span class="badge">${escape(selected.type)}</span>${(selected.tags||[]).map(t=>`<span class="badge">${escape(t)}</span>`).join('')}</p>${selected.resource?`<p><strong>Resource:</strong><br><span class="id">${escape(selected.resource)}</span></p>`:''}` +
+    '</div><div class="detail-sections" id="detailSections">' +
+    detailSectionHtml(0, 'outgoing', 'Outgoing Links', outgoing.length, outgoingHtml) +
+    '<div class="detail-splitter" id="outgoingSplitter" data-before="0" data-after="1" title="Resize Outgoing Links and Backlinks sections" aria-label="Resize Outgoing Links and Backlinks sections"></div>' +
+    detailSectionHtml(1, 'backlinks', 'Backlinks', incoming.length, incomingHtml) +
+    '<div class="detail-splitter" id="backlinksSplitter" data-before="1" data-after="2" title="Resize Backlinks and Body Preview sections" aria-label="Resize Backlinks and Body Preview sections"></div>' +
+    detailSectionHtml(2, 'bodyPreview', 'Body Preview', '', bodyHtml, 'body-preview') + '</div>';
   bindDetailNavigation(el);
-  const bodyPreview = el.querySelector('.body-preview');
-  if (bodyPreview) bodyPreview.outerHTML = '<div class="body-preview">' + renderMarkdown((selected.body || '').slice(0, 2500), selected.path) + '</div>';
+  initDetailSections(el);
   el.querySelectorAll('a[data-id]').forEach(a => a.addEventListener('click', ev => { ev.preventDefault(); const n = byId.get(a.dataset.id); if (n) select(n); }));
 }
 function renderList() {
@@ -453,7 +590,64 @@ function renderList() {
   });
   syncGlobalTypeToggle();
 }
+function renderGlossary() {
+  const list = document.getElementById('glossaryList');
+  if (!list) return;
+  const entries = Array.isArray(bundle.glossary) ? bundle.glossary : [];
+  if (!entries.length) {
+    list.innerHTML = '<p class="glossary-empty">No generated glossary entries are available.</p>';
+    return;
+  }
+  list.innerHTML = entries.map(entry => {
+    const sources = (entry.sources || []).map(source =>
+      '<button class="glossary-link" type="button" data-id="' + escape(source.id) + '">' + escape(source.title || source.id) + '</button>'
+    ).join('');
+    return '<article class="glossary-entry"><div class="glossary-term">' + escape(entry.term) + '</div>' +
+      (entry.meaning ? '<div class="glossary-meaning">' + escape(entry.meaning) + '</div>' : '') +
+      (sources ? '<div class="glossary-sources" aria-label="Contributing concepts">' + sources + '</div>' : '') +
+      '</article>';
+  }).join('');
+  list.querySelectorAll('.glossary-link').forEach(link => link.addEventListener('click', () => {
+    const node = byId.get(link.dataset.id);
+    if (node) select(node);
+  }));
+}
 function updateStats() { document.getElementById('stats').textContent = `${visibleNodes().length}/${nodes.length} concepts · ${visibleLinks().length}/${links.length} links · ${visibleTypes.size}/${bundle.types.length} types`; }
+function initSidebarSections() {
+  const sidebar = document.getElementById('sidebar');
+  const splitter = document.getElementById('sidebarSplitter');
+  const sections = {
+    top: { element: document.getElementById('navigationSection'), toggle: document.getElementById('navigationToggle'), className: 'top-collapsed' },
+    bottom: { element: document.getElementById('glossarySection'), toggle: document.getElementById('glossaryToggle'), className: 'bottom-collapsed' }
+  };
+  const setCollapsed = (side, collapsed) => {
+    const section = sections[side];
+    section.element.classList.toggle('collapsed', collapsed);
+    section.toggle.setAttribute('aria-expanded', String(!collapsed));
+    sidebar.classList.toggle(section.className, collapsed);
+  };
+  Object.entries(sections).forEach(([side, section]) => section.toggle.addEventListener('click', () => {
+    setCollapsed(side, !section.element.classList.contains('collapsed'));
+  }));
+  splitter.addEventListener('pointerdown', event => {
+    if (sidebar.classList.contains('top-collapsed') || sidebar.classList.contains('bottom-collapsed')) return;
+    event.preventDefault();
+    splitter.classList.add('dragging');
+    const move = ev => {
+      const rect = sidebar.getBoundingClientRect();
+      const minSection = 96;
+      const topSize = Math.max(minSection, Math.min(rect.height - minSection - splitter.offsetHeight, ev.clientY - rect.top));
+      sidebar.style.setProperty('--top-section-size', Math.round(topSize) + 'px');
+    };
+    const up = () => {
+      splitter.classList.remove('dragging');
+      window.removeEventListener('pointermove', move);
+      window.removeEventListener('pointerup', up);
+    };
+    window.addEventListener('pointermove', move);
+    window.addEventListener('pointerup', up);
+  });
+}
 function initPanelResizers() {
   const main = document.querySelector('main');
   const left = document.getElementById('leftResizer');
@@ -546,7 +740,7 @@ function initUi() {
   svg.on('click', () => select(null));
 }
 
-initUi(); initPanelResizers(); resize(); renderDetail(); renderList(); renderGraph(); setTimeout(() => fit(0), 250);
+initSidebarSections(); renderGlossary(); initUi(); initPanelResizers(); resize(); renderDetail(); renderList(); renderGraph(); setTimeout(() => fit(0), 250);
 if ('ResizeObserver' in window) new ResizeObserver(scheduleResize).observe(wrap); else window.addEventListener('resize', scheduleResize);
 })();
 </script>

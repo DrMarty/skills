@@ -60,6 +60,24 @@ Generated `viz.html` files shall provide the validated interactive workspace use
 
 Reset shall unpin every node and refit the graph. Concept and type visibility controls shall update nodes, links, counts, and indeterminate selection states without requiring regeneration.
 
+### R-OKF-015: Generated catalog glossary
+
+The plugin shall maintain a root-level `glossary.md` as a deterministic generated catalog artifact. It shall extract conservatively identified common terms and acronyms from concept documents, require common terms to occur in at least two distinct concepts, retain explicit acronym expansions when present, order entries alphabetically without regard to case, and link every entry to its contributing concepts.
+
+Glossary generation shall be available as an individual runner command and shall run before index generation in the normal pipeline. Generated glossary content shall be validated for links, excluded from concept counts and graph nodes, and reproducible for unchanged catalog input.
+
+### R-OKF-016: Split navigation and glossary sidebar
+
+The generated graph workspace shall divide its left sidebar into independently collapsible navigation and glossary sections separated by a draggable horizontal resize control. The upper section shall contain concept search and the hierarchical navigation tree. The lower section shall render the generated catalog glossary, including meanings and links to contributing concepts.
+
+Glossary concept links shall select the associated graph node and update the detail panel through the same navigation path as a node click. Collapsing either section shall make the remaining expanded section use the available sidebar height.
+
+### R-OKF-017: Sectioned concept details sidebar
+
+The generated graph workspace shall divide the concept-detail content into independently collapsible Outgoing Links, Backlinks, and Body Preview sections. Adjacent sections shall be separated by draggable horizontal resize controls, while concept identity, metadata, and navigation-history controls remain available above the section stack.
+
+Collapsing a detail section shall redistribute the available height among the remaining expanded sections. Links in the Outgoing Links, Backlinks, and Markdown Body Preview sections shall continue to select the associated concept through the normal detail-navigation path.
+
 ## Local-test milestone
 
 The local-test milestone is complete only when the Codex plugin and skill validators pass, the end-to-end worker tests pass, the local marketplace exposes `okf-manager`, Codex reports the plugin as installed, and a fresh Codex task can load the updated skill.

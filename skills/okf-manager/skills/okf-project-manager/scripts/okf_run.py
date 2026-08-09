@@ -88,7 +88,7 @@ def main(argv: list[str]) -> int:
     command.add_argument("--catalog", dest="catalog_opt")
     command.add_argument("--dry-run", action="store_true")
 
-    for name, help_text in (("lint", "Lint catalog and links"), ("validate", "Validate catalog"), ("index", "Regenerate indexes"), ("visualize", "Generate viz.html")):
+    for name, help_text in (("lint", "Lint catalog and links"), ("validate", "Validate catalog"), ("glossary", "Generate glossary.md"), ("index", "Regenerate indexes"), ("visualize", "Generate viz.html")):
         command = sub.add_parser(name, help=help_text)
         add_catalog(command)
         if name in {"lint", "validate"}:
@@ -101,7 +101,7 @@ def main(argv: list[str]) -> int:
     command.add_argument("--min-concepts", type=int, default=0)
     command.add_argument("--min-edges", type=int, default=0)
 
-    command = sub.add_parser("pipeline", help="Clean, lint, index, visualize, and verify")
+    command = sub.add_parser("pipeline", help="Clean, lint, generate glossary and indexes, visualize, and verify")
     add_catalog(command)
     command.add_argument("--min-concepts", type=int, default=0)
     command.add_argument("--min-edges", type=int, default=0)
@@ -178,10 +178,11 @@ def main(argv: list[str]) -> int:
         if args.dry_run:
             command.append("--dry-run")
         return run(command)
-    if args.command in {"lint", "validate", "index", "visualize"}:
+    if args.command in {"lint", "validate", "glossary", "index", "visualize"}:
         script_name = {
             "lint": "okf_lint_catalog.py",
             "validate": "okf_validate_bundle.py",
+            "glossary": "okf_generate_glossary.py",
             "index": "okf_regenerate_indexes.py",
             "visualize": "okf_visualize_bundle.py",
         }[args.command]
@@ -198,6 +199,7 @@ def main(argv: list[str]) -> int:
         catalog = selected(args, "catalog_root", "catalog_opt")
         steps = [
             [str(python), str(scripts / "okf_clean_raw.py"), "--catalog", catalog],
+            [str(python), str(scripts / "okf_generate_glossary.py"), catalog],
             [str(python), str(scripts / "okf_lint_catalog.py"), catalog],
             [str(python), str(scripts / "okf_regenerate_indexes.py"), catalog],
             [str(python), str(scripts / "okf_visualize_bundle.py"), catalog],
@@ -208,7 +210,7 @@ def main(argv: list[str]) -> int:
             if code:
                 print(json.dumps({"ok": False, "failed_step": step, "exit_code": code}, indent=2))
                 return code
-        print(json.dumps({"ok": True, "pipeline": "clean-raw-lint-index-visualize-verify", "catalog": str(Path(catalog).resolve())}, indent=2))
+        print(json.dumps({"ok": True, "pipeline": "clean-raw-glossary-lint-index-visualize-verify", "catalog": str(Path(catalog).resolve())}, indent=2))
         return 0
     if args.command.startswith("concept-") or args.command == "log":
         operation = {"concept-list": "list", "concept-read": "read", "concept-write": "write", "log": "append-log"}[args.command]
@@ -254,4 +256,3 @@ def main(argv: list[str]) -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main(sys.argv))
-

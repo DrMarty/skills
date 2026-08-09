@@ -61,6 +61,7 @@ Bulk plan JSON:
 clean-raw --catalog <catalog> [--dry-run]
 lint --catalog <catalog>
 validate --catalog <catalog>
+glossary --catalog <catalog>
 index --catalog <catalog>
 visualize --catalog <catalog>
 verify-graph --catalog <catalog> [--min-concepts N] [--min-edges N]
@@ -69,3 +70,4 @@ pipeline --catalog <catalog> [--min-concepts N] [--min-edges N]
 
 Use `pipeline` after concept writes. Use individual read-only commands when inspection must not regenerate artifacts.
 
+`glossary` writes root `glossary.md` from terms and acronyms occurring in at least two concept documents. The pipeline runs it before `index` so the root index links the generated glossary.
