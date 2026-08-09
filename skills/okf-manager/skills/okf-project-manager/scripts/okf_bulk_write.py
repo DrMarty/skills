@@ -13,7 +13,7 @@ from urllib.parse import urlparse
 
 import yaml
 
-RESERVED = {"index", "log", "index.md", "log.md"}
+RESERVED = {"index", "log", "glossary", "index.md", "log.md", "glossary.md"}
 SEGMENT_RE = re.compile(r"[A-Za-z0-9_][A-Za-z0-9_.-]*")
 INTERNAL_DIRS = {".git", "__pycache__", ".pytest_cache", ".mypy_cache", ".ruff_cache", "node_modules", ".npm", ".venv", "venv", "dist", "build"}
 INTERNAL_SUFFIXES = {".pyc", ".pyo", ".log", ".tmp", ".swp"}

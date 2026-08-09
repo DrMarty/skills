@@ -74,7 +74,7 @@ def validate(root: Path, strict: bool = True) -> dict:
         if _is_raw_evidence(rel_path):
             continue
         text = path.read_text(encoding="utf-8", errors="replace")
-        if path.name in {"index.md", "log.md"}:
+        if path.name in {"index.md", "log.md", "glossary.md"}:
             issues.extend(_link_issues(path, text, root, rel))
             continue
         count += 1

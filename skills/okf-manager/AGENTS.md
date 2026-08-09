@@ -23,7 +23,8 @@
 
 ## Work Guidance
 
-- Prefer deterministic helpers for validation, indexing, and visualization.
+- Prefer deterministic helpers for validation, glossary generation, indexing, and visualization.
+- Treat root `glossary.md` as a generated catalog artifact: keep it alphabetically ordered, source-linked, reproducible, and excluded from concept and graph counts.
 - Treat `skills/okf-project-manager/assets/viz-template.html` as the canonical generated graph UI and cover its durable controls with workflow tests.
 - Keep Agent Zero-specific paths and APIs out of the Codex implementation.
 - Treat custom subagents and MCP integration as optional until a validated use case requires them.
@@ -35,6 +36,7 @@
 - Validate each `SKILL.md` with the Codex skill validator.
 - Compile bundled Python scripts before running them.
 - Run `python -m unittest discover -s tests -v` with the user-local worker environment bootstrapped.
+- Verify glossary generation is deterministic, alphabetically ordered, link-valid, and excluded from concept and graph counts.
 - Verify local marketplace installation and plugin discovery before declaring a local-test milestone ready.
 
 ## Child DOX Index

@@ -60,6 +60,12 @@ Generated `viz.html` files shall provide the validated interactive workspace use
 
 Reset shall unpin every node and refit the graph. Concept and type visibility controls shall update nodes, links, counts, and indeterminate selection states without requiring regeneration.
 
+### R-OKF-015: Generated catalog glossary
+
+The plugin shall maintain a root-level `glossary.md` as a deterministic generated catalog artifact. It shall extract conservatively identified common terms and acronyms from concept documents, require common terms to occur in at least two distinct concepts, retain explicit acronym expansions when present, order entries alphabetically without regard to case, and link every entry to its contributing concepts.
+
+Glossary generation shall be available as an individual runner command and shall run before index generation in the normal pipeline. Generated glossary content shall be validated for links, excluded from concept counts and graph nodes, and reproducible for unchanged catalog input.
+
 ## Local-test milestone
 
 The local-test milestone is complete only when the Codex plugin and skill validators pass, the end-to-end worker tests pass, the local marketplace exposes `okf-manager`, Codex reports the plugin as installed, and a fresh Codex task can load the updated skill.

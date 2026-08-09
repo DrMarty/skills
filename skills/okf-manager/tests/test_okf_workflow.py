@@ -42,12 +42,12 @@ class OkfWorkflowTest(unittest.TestCase):
                 {
                     "concept_id": "systems/demo",
                     "frontmatter": {"type": "System", "title": "Demo", "description": "Demo system."},
-                    "body": "Demo overview.\n\n# Schema\n\n- `id`: identifier\n\n# Citations\n\n- [README](../../raw/demo/README.md)",
+                    "body": "The Control Loop exposes an Application Programming Interface (API).\n\n# Schema\n\n- `id`: identifier\n\n# Citations\n\n- [README](../../raw/demo/README.md)",
                 },
                 {
                     "concept_id": "concepts/related",
                     "frontmatter": {"type": "Concept", "title": "Related", "description": "Related concept."},
-                    "body": "See [Demo](../systems/demo.md).\n\n# Citations\n\n- [Notes](../../raw/demo/docs/notes.txt)",
+                    "body": "The Control Loop uses the API for coordination. See [Demo](../systems/demo.md).\n\n# Citations\n\n- [Notes](../../raw/demo/docs/notes.txt)",
                 },
             ],
         }, indent=2), encoding="utf-8")
@@ -94,7 +94,7 @@ class OkfWorkflowTest(unittest.TestCase):
         good_update.write_text(json.dumps({
             "concept_id": "systems/demo",
             "frontmatter": {"description": "Web enriched."},
-            "body": "Updated.\n\n# Schema\n\n- `id`: identifier\n\n# Citations\n\n- [README](../../raw/demo/README.md)",
+            "body": "Updated Control Loop with an Application Programming Interface (API).\n\n# Schema\n\n- `id`: identifier\n\n# Citations\n\n- [README](../../raw/demo/README.md)",
         }), encoding="utf-8")
         self.run_okf("concept-write", "--catalog", self.catalog, good_update, "--web-pass")
         self.run_okf("log", "--catalog", self.catalog, "Updated demo concepts")
@@ -105,6 +105,19 @@ class OkfWorkflowTest(unittest.TestCase):
         self.assertGreaterEqual(graph["concepts"], 2)
         self.assertGreaterEqual(graph["edges"], 1)
         self.assertTrue((self.catalog / "index.md").exists())
+        glossary_path = self.catalog / "glossary.md"
+        self.assertTrue(glossary_path.exists())
+        glossary = glossary_path.read_text(encoding="utf-8")
+        self.assertIn("| API | Application Programming Interface |", glossary)
+        self.assertIn("| Control Loop | — |", glossary)
+        self.assertLess(glossary.index("| API |"), glossary.index("| Control Loop |"))
+        first_glossary = glossary_path.read_bytes()
+        glossary_result = json.loads(self.run_okf("glossary", "--catalog", self.catalog).stdout)
+        self.assertGreaterEqual(glossary_result["entry_count"], 2)
+        self.assertEqual(first_glossary, glossary_path.read_bytes())
+        listed_after_glossary = json.loads(self.run_okf("concept-list", "--catalog", self.catalog).stdout)
+        self.assertEqual(listed_after_glossary["concept_count"], 2)
+        self.assertIn("[glossary](glossary.md)", (self.catalog / "index.md").read_text(encoding="utf-8"))
         viz = (self.catalog / "viz.html").read_text(encoding="utf-8")
         self.assertIn('--left-panel-width:clamp(240px, 25vw, 520px)', viz)
         self.assertIn('id="conceptTree"', viz)

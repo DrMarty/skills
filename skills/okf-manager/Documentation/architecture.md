@@ -19,7 +19,11 @@ okf-manager/
     └── scripts/
 ```
 
-The skill owns workflow and policy. References provide progressive disclosure. Scripts provide low-variance filesystem, ingestion, validation, indexing, graph, guarded network, and optional BigQuery operations. `assets/viz-template.html` is the canonical interactive graph shell; `okf_visualize_bundle.py` injects escaped bundle identity and serialized graph data into its placeholders.
+The skill owns workflow and policy. References provide progressive disclosure. Scripts provide low-variance filesystem, ingestion, validation, glossary, indexing, graph, guarded network, and optional BigQuery operations. `assets/viz-template.html` is the canonical interactive graph shell; `okf_visualize_bundle.py` injects escaped bundle identity and serialized graph data into its placeholders.
+
+## Glossary interface
+
+`okf_generate_glossary.py` scans concept Markdown while excluding generated documents and raw evidence. It recognizes explicit acronym definitions, repeated uppercase acronyms, frontmatter titles and tags, Markdown headings, and conservative capitalized multi-word phrases. Candidates must occur in at least two distinct concepts. The generated root `glossary.md` lists entries case-insensitively in alphabetical order, preserves a deterministic expansion or matching concept description when available, and links to every contributing concept. It is a derived catalog document, not a concept or graph node.
 
 ## Visualization interface
 
@@ -44,6 +48,7 @@ The graph shell uses three resizable desktop regions: a searchable concept tree,
 | raw evidence cleanup | `okf_clean_raw.py` |
 | validation and link lint | `okf_validate_bundle.py`, `okf_lint_catalog.py` |
 | generated indexes | `okf_regenerate_indexes.py` |
+| generated glossary | `okf_generate_glossary.py` |
 | live graph and verification | `okf_visualize_bundle.py`, `okf_verify_graph.py` |
 | guarded URL fetch state | `okf_fetch_url.py` |
 | BigQuery discovery/read/sample | optional `okf_bigquery.py` |

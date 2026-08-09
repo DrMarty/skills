@@ -30,7 +30,7 @@ def _build_graph(root: Path) -> dict:
     ids = set()
     bodies = {}
     for md in sorted(root.rglob("*.md")):
-        if md.name in {"index.md", "log.md"}:
+        if md.name in {"index.md", "log.md", "glossary.md"}:
             continue
         rel = md.relative_to(root)
         if _is_raw_evidence(rel):
@@ -57,7 +57,7 @@ def _build_graph(root: Path) -> dict:
     edges = []
     seen = set()
     for md in sorted(root.rglob("*.md")):
-        if md.name in {"index.md", "log.md"}:
+        if md.name in {"index.md", "log.md", "glossary.md"}:
             continue
         rel = md.relative_to(root)
         if _is_raw_evidence(rel):
