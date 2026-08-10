@@ -1,4 +1,0 @@
-interface:
-  display_name: "OKF Project Manager"
-  short_description: "Manage and visualize portable OKF catalogs"
-  default_prompt: "Use $okf-project-manager to validate this workspace's OKF catalog and refresh its graph."

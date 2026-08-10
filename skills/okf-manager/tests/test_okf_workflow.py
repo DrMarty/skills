@@ -12,7 +12,7 @@ from pathlib import Path
 
 
 PACKAGE_ROOT = Path(__file__).resolve().parents[1]
-SKILL_ROOT = PACKAGE_ROOT / "skills" / "okf-project-manager"
+SKILL_ROOT = PACKAGE_ROOT / "skills" / "okf"
 RUNNER = SKILL_ROOT / "scripts" / "okf_run.py"
 
 
@@ -64,6 +64,12 @@ class OkfWorkflowTest(unittest.TestCase):
         if result.returncode != expect:
             self.fail(f"command returned {result.returncode}, expected {expect}\nstdout:\n{result.stdout}\nstderr:\n{result.stderr}")
         return result
+
+    def test_canonical_skill_identity(self) -> None:
+        skill_dirs = sorted(path.name for path in (PACKAGE_ROOT / "skills").iterdir() if (path / "SKILL.md").is_file())
+        self.assertEqual(skill_dirs, ["okf"])
+        self.assertIn("name: okf\n", (SKILL_ROOT / "SKILL.md").read_text(encoding="utf-8"))
+        self.assertIn("Use $okf ", (SKILL_ROOT / "agents" / "openai.yaml").read_text(encoding="utf-8"))
 
     def test_end_to_end_local_catalog(self) -> None:
         inventory = self.root / "inventory.json"

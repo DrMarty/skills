@@ -5,11 +5,11 @@
 From the repository root on Windows PowerShell:
 
 ```powershell
-python skills/okf-manager/skills/okf-project-manager/scripts/okf_bootstrap_env.py
+python skills/okf-manager/skills/okf/scripts/okf_bootstrap_env.py
 python -m unittest discover -s skills/okf-manager/tests -v
 ```
 
-Also run the Codex plugin validator against `skills/okf-manager` and the skill validator against `skills/okf-manager/skills/okf-project-manager`.
+Also run the Codex plugin validator against `skills/okf-manager` and the skill validator against `skills/okf-manager/skills/okf`.
 
 ## Install into Codex
 
@@ -25,11 +25,11 @@ Start a new Codex task so the installed skill metadata is loaded. During develop
 
 ## Suggested smoke prompts
 
-- `Use $okf-project-manager to inspect the OKF catalog in this workspace.`
-- `Use $okf-project-manager to validate this catalog and report broken links.`
-- `Use $okf-project-manager to regenerate the catalog glossary and show the common terms and acronyms.`
-- `Use $okf-project-manager to ingest these source files into a new OKF catalog.`
-- `Use $okf-project-manager to regenerate and show the catalog graph.`
+- `Use $okf to inspect the OKF catalog in this workspace.`
+- `Use $okf to validate this catalog and report broken links.`
+- `Use $okf to regenerate the catalog glossary and show the common terms and acronyms.`
+- `Use $okf to ingest these source files into a new OKF catalog.`
+- `Use $okf to regenerate and show the catalog graph.`
 
 New bundle creation should pause for confirmation of the exact catalog path before any directory is created.
 

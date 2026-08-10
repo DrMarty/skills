@@ -24,8 +24,9 @@
 ## Work Guidance
 
 - Prefer deterministic helpers for validation, glossary generation, indexing, and visualization.
+- Expose the package workflow through the canonical `okf` skill and `$okf` invocation.
 - Treat root `glossary.md` as a generated catalog artifact: keep it alphabetically ordered, source-linked, reproducible, and excluded from concept and graph counts.
-- Treat `skills/okf-project-manager/assets/viz-template.html` as the canonical generated graph UI and cover its durable controls with workflow tests.
+- Treat `skills/okf/assets/viz-template.html` as the canonical generated graph UI and cover its durable controls with workflow tests.
 - Keep Agent Zero-specific paths and APIs out of the Codex implementation.
 - Treat custom subagents and MCP integration as optional until a validated use case requires them.
 - Keep worker dependencies in the user-local OKF Manager cache rather than the installed plugin or user project.

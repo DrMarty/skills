@@ -1,9 +1,9 @@
 ---
-name: okf-project-manager
-description: Manage portable Open Knowledge Format (OKF) catalogs in Codex, including catalog creation, source ingestion, provenance retention, concept listing/reading/writing, validation, glossary, index and log maintenance, guarded web enrichment, optional BigQuery enrichment, and interactive graph generation. Use for requests to create or inspect an OKF bundle, ingest files or URLs into OKF, update a knowledge catalog, validate or repair OKF documents and links, regenerate derived catalog artifacts, or display the knowledge graph.
+name: okf
+description: Manage portable Open Knowledge Format (OKF) catalogs in Codex, including catalog creation, source ingestion, provenance retention, concept listing/reading/writing, validation, glossary, index and log maintenance, guarded web enrichment, and interactive graph generation. Use for requests to create or inspect an OKF bundle, ingest files or URLs into OKF, update a knowledge catalog, validate or repair OKF documents and links, regenerate derived catalog artifacts, or display the knowledge graph.
 ---
 
-# OKF Project Manager
+# OKF
 
 Use the deterministic runner in `scripts/okf_run.py` for catalog operations. Resolve all paths explicitly and run the script from this installed skill directory, never from retained evidence.
 
@@ -12,7 +12,6 @@ Read these references only when needed:
 - `references/okf-format.md` for concept structure and preservation rules.
 - `references/commands.md` for exact runner commands and JSON plan shapes.
 - `references/web-ingestion.md` for URL crawl guards and enrichment rules.
-- `references/bigquery.md` for optional BigQuery enrichment.
 
 ## Resolve the catalog
 
@@ -57,11 +56,9 @@ After graph-visible concept changes:
 
 For read-only inspection, use `concept-list`, `concept-read`, `validate`, or `verify-graph` without rewriting derived artifacts.
 
-## Web and external systems
+## Web sources
 
 Fetch only user-provided or explicitly approved URLs. Declare network use and apply the host, path, page, and depth guards in `references/web-ingestion.md`.
-
-Treat BigQuery as optional. Do not install its dependency or access a dataset unless the user requests BigQuery enrichment. Report missing credentials or dependencies without weakening local bundle behavior.
 
 ## Report
 
