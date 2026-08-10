@@ -14,6 +14,8 @@ from pathlib import Path
 PACKAGE_ROOT = Path(__file__).resolve().parents[1]
 SKILL_ROOT = PACKAGE_ROOT / "skills" / "okf"
 RUNNER = SKILL_ROOT / "scripts" / "okf_run.py"
+sys.path.insert(0, str(SKILL_ROOT / "scripts"))
+from okf_visualize_bundle import _build_type_tree
 
 
 class QuietHandler(http.server.SimpleHTTPRequestHandler):
@@ -41,12 +43,12 @@ class OkfWorkflowTest(unittest.TestCase):
             "concepts": [
                 {
                     "concept_id": "systems/demo",
-                    "frontmatter": {"type": "System", "title": "Demo", "description": "Demo system."},
+                    "frontmatter": {"type": "Test Operations / Testing Facilities / Facility Access", "title": "Demo", "description": "Demo system."},
                     "body": "The Control Loop exposes an Application Programming Interface (API).\n\n# Schema\n\n- `id`: identifier\n\n# Citations\n\n- [README](../../raw/demo/README.md)",
                 },
                 {
                     "concept_id": "concepts/related",
-                    "frontmatter": {"type": "Concept", "title": "Related", "description": "Related concept."},
+                    "frontmatter": {"type": "Test Operations / Testing Facilities / Facility Capabilities", "title": "Related", "description": "Related concept."},
                     "body": "The Control Loop uses the API for coordination. See [Demo](../systems/demo.md).\n\n# Citations\n\n- [Notes](../../raw/demo/docs/notes.txt)",
                 },
             ],
@@ -70,6 +72,23 @@ class OkfWorkflowTest(unittest.TestCase):
         self.assertEqual(skill_dirs, ["okf"])
         self.assertIn("name: okf\n", (SKILL_ROOT / "SKILL.md").read_text(encoding="utf-8"))
         self.assertIn("Use $okf ", (SKILL_ROOT / "agents" / "openai.yaml").read_text(encoding="utf-8"))
+
+    def test_arbitrary_depth_type_tree(self) -> None:
+        tree = _build_type_tree([
+            "Root",
+            "Root / Child",
+            "Root / Child / Grandchild / Level Four / Level Five",
+            "Root / Sibling",
+        ])
+        self.assertEqual([branch["name"] for branch in tree], ["Root"])
+        root = tree[0]
+        self.assertEqual(root["directTypes"], ["Root"])
+        self.assertEqual([branch["name"] for branch in root["children"]], ["Child", "Sibling"])
+        child = root["children"][0]
+        self.assertEqual(child["directTypes"], ["Root / Child"])
+        level_five = child["children"][0]["children"][0]["children"][0]
+        self.assertEqual(level_five["path"], "Root / Child / Grandchild / Level Four / Level Five")
+        self.assertEqual(level_five["directTypes"], [level_five["path"]])
 
     def test_end_to_end_local_catalog(self) -> None:
         inventory = self.root / "inventory.json"
@@ -125,6 +144,15 @@ class OkfWorkflowTest(unittest.TestCase):
         self.assertEqual(listed_after_glossary["concept_count"], 2)
         self.assertIn("[glossary](glossary.md)", (self.catalog / "index.md").read_text(encoding="utf-8"))
         viz = (self.catalog / "viz.html").read_text(encoding="utf-8")
+        graph_payload = json.loads(viz.split('<script id="bundle-data" type="application/json">', 1)[1].split('</script>', 1)[0])
+        self.assertEqual(graph_payload["typeTree"][0]["name"], "Test Operations")
+        facilities_branch = graph_payload["typeTree"][0]["children"][0]
+        self.assertEqual(facilities_branch["name"], "Testing Facilities")
+        self.assertEqual(
+            [child["name"] for child in facilities_branch["children"]],
+            ["Facility Access", "Facility Capabilities"],
+        )
+        self.assertEqual(len(facilities_branch["types"]), 2)
         self.assertIn('--left-panel-width:clamp(240px, 25vw, 520px)', viz)
         self.assertIn('id="conceptTree"', viz)
         self.assertIn('id="navigationSection"', viz)
@@ -135,8 +163,10 @@ class OkfWorkflowTest(unittest.TestCase):
         self.assertIn('function renderGlossary()', viz)
         self.assertIn('"term": "API"', viz)
         self.assertIn('id="typesToggleAll"', viz)
-        self.assertIn('class="tree-type" data-type=', viz)
-        self.assertNotIn('class="tree-type" data-type="System" open', viz)
+        self.assertIn('function renderTypeBranch(branch)', viz)
+        self.assertIn('class="tree-type" data-type-path=', viz)
+        self.assertNotIn('class="tree-type" data-type-path="Test Operations" open', viz)
+        self.assertIn('membersForTypeBranch(typeBranches.get(toggle.dataset.typePath))', viz)
         self.assertIn('class="concept-toggle"', viz)
         self.assertNotIn('id="typeFilter"', viz)
         self.assertIn('id="detailBack"', viz)

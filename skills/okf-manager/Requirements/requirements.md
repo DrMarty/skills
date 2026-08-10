@@ -84,6 +84,12 @@ The generated graph workspace shall provide an About control in the upper-right 
 
 The About display shall support explicit dismissal, outside-click dismissal, and Escape-key dismissal without navigating away from the graph.
 
+### R-OKF-019: Recursive type hierarchy
+
+The generated graph workspace shall support type paths of arbitrary depth using ` / ` as the canonical parent-child separator. It shall embed a deterministic recursive type tree in the graph payload and render every child type at the next deeper level beneath its parent in the Types navigation tree.
+
+Each type branch shall include concepts assigned directly to that type followed by child-type branches. Parent visibility controls and counts shall aggregate all direct and descendant concepts, including correct checked and indeterminate states. Existing flat type names shall remain valid one-level trees.
+
 ## Local-test milestone
 
 The local-test milestone is complete only when the Codex plugin and skill validators pass, the end-to-end worker tests pass, the local marketplace exposes `okf-manager`, Codex reports the plugin as installed, and a fresh Codex task can load the updated skill.

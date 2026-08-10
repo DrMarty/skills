@@ -186,6 +186,9 @@ const byId = new Map(nodes.map(n => [n.id, n]));
 const links = bundle.edges.map(e => ({source:e.source, target:e.target}));
 const enabledNodes = new Set(nodes.map(n => n.id));
 const visibleTypes = new Set(bundle.types);
+const typeTree = Array.isArray(bundle.typeTree) ? bundle.typeTree : bundle.types.map(type => ({name:type, path:type, types:[type], directTypes:[type], children:[]}));
+const typeBranches = new Map();
+indexTypeBranches(typeTree);
 const svg = d3.select('#graph');
 const wrap = document.getElementById('graphWrap');
 const tooltip = document.getElementById('tooltip');
@@ -217,6 +220,32 @@ let linkSel = linkLayer.selectAll('line');
 let nodeSel = nodeLayer.selectAll('g.node');
 
 function escape(s) { return String(s||'').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function indexTypeBranches(branches) {
+  for (const branch of branches || []) {
+    typeBranches.set(branch.path, branch);
+    indexTypeBranches(branch.children || []);
+  }
+}
+function membersForTypeBranch(branch) {
+  const branchTypes = new Set(branch && Array.isArray(branch.types) ? branch.types : []);
+  return nodes.filter(node => branchTypes.has(node.type));
+}
+function directMembersForTypeBranch(branch) {
+  const directTypes = new Set(branch && Array.isArray(branch.directTypes) ? branch.directTypes : []);
+  return nodes.filter(node => directTypes.has(node.type));
+}
+function conceptTreeRow(node) {
+  return '<div class="tree-concept" data-id="' + escape(node.id) + '"><input class="concept-toggle" type="checkbox" aria-label="Show ' + escape(node.title || node.id) + '" checked><button class="tree-concept-button" type="button">' + escape(node.title || node.id) + '</button></div>';
+}
+function renderTypeBranch(branch) {
+  const members = membersForTypeBranch(branch);
+  const directMembers = directMembersForTypeBranch(branch);
+  const representativeType = (branch.directTypes || [])[0] || (branch.types || [])[0];
+  return '<details class="tree-type" data-type-path="' + escape(branch.path) + '"><summary><input class="type-toggle" type="checkbox" data-type-path="' + escape(branch.path) + '" checked><span class="swatch" style="background:' + (palette[representativeType] || '#64748b') + '"></span><span>' + escape(branch.name) + '</span><span class="tree-count">' + members.length + '/' + members.length + '</span></summary><div class="tree-children">' +
+    directMembers.map(conceptTreeRow).join('') +
+    (branch.children || []).map(renderTypeBranch).join('') +
+    '</div></details>';
+}
 function safeMarkdownHref(raw, conceptPath) {
   const href = String(raw || '').trim();
   if (!href || href.startsWith('//')) return '';
@@ -583,8 +612,12 @@ function renderList() {
     const members = nodes.filter(n => n.type === type);
     const enabledCount = members.filter(n => enabledNodes.has(n.id)).length;
     if (enabledCount) visibleTypes.add(type);
-    const toggle = Array.from(tree.querySelectorAll('.type-toggle')).find(item => item.dataset.type === type);
-    const branch = toggle ? toggle.closest('.tree-type') : null;
+  }
+  tree.querySelectorAll('.type-toggle').forEach(toggle => {
+    const branchData = typeBranches.get(toggle.dataset.typePath);
+    const members = membersForTypeBranch(branchData);
+    const enabledCount = members.filter(n => enabledNodes.has(n.id)).length;
+    const branch = toggle.closest('.tree-type');
     if (toggle) {
       toggle.checked = enabledCount === members.length;
       toggle.indeterminate = enabledCount > 0 && enabledCount < members.length;
@@ -594,7 +627,7 @@ function renderList() {
       const count = branch.querySelector('.tree-count');
       if (count) count.textContent = enabledCount + '/' + members.length;
     }
-  }
+  });
   tree.querySelectorAll('.tree-concept').forEach(row => {
     const n = byId.get(row.dataset.id);
     if (!n) return;
@@ -701,12 +734,7 @@ function initPanelResizers() {
 function initUi() {
   const tree = document.getElementById('conceptTree');
   tree.innerHTML = '<details class="tree-root" open><summary><input id="typesToggleAll" type="checkbox" checked><strong id="typesToggleAllLabel">Types — Select None</strong></summary><div class="tree-children">' +
-    bundle.types.map(type => {
-      const members = nodes.filter(n => n.type === type);
-      return '<details class="tree-type" data-type="' + escape(type) + '"><summary><input class="type-toggle" type="checkbox" data-type="' + escape(type) + '" checked><span class="swatch" style="background:' + (palette[type] || '#94a3b8') + '"></span><span>' + escape(type) + '</span><span class="tree-count">' + members.length + '/' + members.length + '</span></summary><div class="tree-children">' +
-        members.map(n => '<div class="tree-concept" data-id="' + escape(n.id) + '"><input class="concept-toggle" type="checkbox" aria-label="Show ' + escape(n.title || n.id) + '" checked><button class="tree-concept-button" type="button">' + escape(n.title || n.id) + '</button></div>').join('') +
-        '</div></details>';
-    }).join('') + '</div></details>';
+    typeTree.map(renderTypeBranch).join('') + '</div></details>';
   tree.querySelectorAll('summary input').forEach(toggle => toggle.addEventListener('click', event => event.stopPropagation()));
   document.getElementById('typesToggleAll').addEventListener('change', event => {
     enabledNodes.clear();
@@ -714,7 +742,7 @@ function initUi() {
     applyFilters();
   });
   tree.querySelectorAll('.type-toggle').forEach(toggle => toggle.addEventListener('change', () => {
-    nodes.filter(n => n.type === toggle.dataset.type).forEach(n => {
+    membersForTypeBranch(typeBranches.get(toggle.dataset.typePath)).forEach(n => {
       if (toggle.checked) enabledNodes.add(n.id); else enabledNodes.delete(n.id);
     });
     applyFilters();
