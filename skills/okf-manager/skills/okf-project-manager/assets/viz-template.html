@@ -11,8 +11,17 @@
 html, body { width:100%; height:100%; margin:0; overflow:hidden; }
 body { font:14px/1.45 system-ui,-apple-system,Segoe UI,sans-serif; background:var(--bg); color:var(--text); }
 header { height:58px; display:flex; align-items:center; gap:16px; padding:10px 16px; border-bottom:1px solid var(--line); background:#020617; overflow:hidden; }
-header h1 { margin:0; font-size:18px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-header .stats { color:var(--muted); font-size:13px; white-space:nowrap; }
+header h1 { flex:1 1 auto; min-width:0; margin:0; font-size:18px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+header .stats { flex:none; color:var(--muted); font-size:13px; white-space:nowrap; }
+.about-button { flex:none; width:auto; margin:0; }
+.about-popover { position:fixed; top:52px; right:12px; z-index:50; display:none; width:min(420px, calc(100vw - 24px)); padding:12px 14px; border:1px solid #334155; border-radius:8px; background:rgba(2,6,23,.98); color:#cbd5e1; box-shadow:0 12px 28px rgba(0,0,0,.55); }
+.about-popover.open { display:block; }
+.about-popover-header { display:flex; align-items:center; gap:10px; margin-bottom:8px; }
+.about-popover-header strong { color:var(--text); font-size:15px; }
+.about-close { width:auto; margin:0 0 0 auto; padding:2px 8px; border:0; background:transparent; font-size:18px; line-height:1; }
+.about-popover p { margin:6px 0; }
+.about-popover code { color:#bae6fd; font-family:ui-monospace,monospace; }
+.about-popover a { color:#7dd3fc; overflow-wrap:anywhere; }
 main { --left-panel-width:clamp(240px, 25vw, 520px); --right-panel-width:clamp(240px, 25vw, 520px); display:grid; grid-template-columns: var(--left-panel-width) 7px minmax(0, 1fr) 7px var(--right-panel-width); height:calc(100vh - 58px); min-height:0; overflow:hidden; }
 aside, section { min-height:0; min-width:0; }
 .sidebar, .detail { background:var(--panel); border-right:1px solid var(--line); }
@@ -128,7 +137,13 @@ button:hover { border-color:var(--accent); }
 <header>
   <h1>OKF Live Self-Graph — __TITLE__</h1>
   <div class="stats" id="stats"></div>
+  <button class="about-button" id="aboutBtn" type="button" aria-expanded="false" aria-controls="aboutPopover">About</button>
 </header>
+<div class="about-popover" id="aboutPopover" role="dialog" aria-label="About OKF Manager">
+  <div class="about-popover-header"><strong id="aboutPluginName">OKF Manager</strong><button class="about-close" id="aboutClose" type="button" aria-label="Close About">×</button></div>
+  <p>Version: <code id="aboutPluginVersion"></code></p>
+  <p>Installation and updates:<br><a id="aboutPluginLink" href="https://github.com/DrMarty/skills/tree/master/skills/okf-manager" target="_blank" rel="noopener noreferrer">https://github.com/DrMarty/skills/tree/master/skills/okf-manager</a></p>
+</div>
 <main>
   <aside class="sidebar" id="sidebar">
     <section class="sidebar-section" id="navigationSection">
@@ -725,18 +740,41 @@ function initUi() {
   document.getElementById('zoomOut').onclick = () => svg.transition().duration(160).call(zoom.scaleBy, 0.83);
   const helpBtn = document.getElementById('helpBtn');
   const graphHelp = document.getElementById('graphHelp');
+  const aboutBtn = document.getElementById('aboutBtn');
+  const aboutPopover = document.getElementById('aboutPopover');
+  const aboutClose = document.getElementById('aboutClose');
+  const generator = bundle.generator || {name:'OKF Manager', version:'unknown', url:'https://github.com/DrMarty/skills/tree/master/skills/okf-manager'};
+  document.getElementById('aboutPluginName').textContent = generator.name || 'OKF Manager';
+  document.getElementById('aboutPluginVersion').textContent = generator.version || 'unknown';
+  const aboutLink = document.getElementById('aboutPluginLink');
+  aboutLink.href = generator.url || 'https://github.com/DrMarty/skills/tree/master/skills/okf-manager';
+  aboutLink.textContent = aboutLink.href;
   const setHelpOpen = open => {
     graphHelp.classList.toggle('open', open);
     helpBtn.setAttribute('aria-expanded', String(open));
   };
+  const setAboutOpen = open => {
+    aboutPopover.classList.toggle('open', open);
+    aboutBtn.setAttribute('aria-expanded', String(open));
+  };
   helpBtn.onclick = event => {
     event.stopPropagation();
+    setAboutOpen(false);
     setHelpOpen(!graphHelp.classList.contains('open'));
   };
+  aboutBtn.onclick = event => {
+    event.stopPropagation();
+    setHelpOpen(false);
+    setAboutOpen(!aboutPopover.classList.contains('open'));
+  };
+  aboutClose.onclick = () => setAboutOpen(false);
   document.addEventListener('click', event => {
     if (!graphHelp.contains(event.target) && event.target !== helpBtn) setHelpOpen(false);
+    if (!aboutPopover.contains(event.target) && event.target !== aboutBtn) setAboutOpen(false);
   });
-  document.addEventListener('keydown', event => { if (event.key === 'Escape') setHelpOpen(false); });
+  document.addEventListener('keydown', event => {
+    if (event.key === 'Escape') { setHelpOpen(false); setAboutOpen(false); }
+  });
   svg.on('click', () => select(null));
 }
 
