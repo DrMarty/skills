@@ -15,4 +15,4 @@ Codex skills and plugins maintained by DrMarty.
 
 ## Development status
 
-The `okf-manager` local-validation milestone provides a skills-first Codex plugin with the portable catalog, ingestion, validation, indexing, visualization, guarded web, and optional BigQuery operations from the [Agent Zero implementation](https://github.com/DrMarty/okf_manager).
+The `okf-manager` local-validation milestone provides a skills-first Codex plugin with portable catalog, provenance, ingestion, validation, indexing, visualization, and guarded web operations derived from the [Agent Zero implementation](https://github.com/DrMarty/okf_manager). Its canonical skill invocation is `$okf`.

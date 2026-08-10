@@ -134,20 +134,6 @@ def main(argv: list[str]) -> int:
     command.add_argument("--reset-state", action="store_true")
     command.add_argument("--out")
 
-    command = sub.add_parser("install-bigquery", help="Install the optional BigQuery dependency")
-    command = sub.add_parser("bigquery-list", help="List BigQuery concepts")
-    command.add_argument("--dataset", required=True)
-    command.add_argument("--billing-project")
-    command = sub.add_parser("bigquery-read", help="Read BigQuery concept metadata")
-    command.add_argument("--dataset", required=True)
-    command.add_argument("--billing-project")
-    command.add_argument("concept_id")
-    command = sub.add_parser("bigquery-sample", help="Sample rows from a BigQuery table")
-    command.add_argument("--dataset", required=True)
-    command.add_argument("--billing-project")
-    command.add_argument("concept_id")
-    command.add_argument("--count", type=int, default=5)
-
     args = parser.parse_args(argv[1:])
     try:
         python = ensure_env(root, args.no_bootstrap)
@@ -237,19 +223,6 @@ def main(argv: list[str]) -> int:
                 command += [flag, value]
         if args.reset_state:
             command.append("--reset-state")
-        return run(command)
-    if args.command == "install-bigquery":
-        return run([str(python), "-m", "pip", "install", "-r", str(root / "requirements-bigquery.txt")])
-    bigquery_operation = {"bigquery-list": "list", "bigquery-read": "read", "bigquery-sample": "sample"}.get(args.command)
-    if bigquery_operation:
-        command = [str(python), str(scripts / "okf_bigquery.py"), "--dataset", args.dataset]
-        if args.billing_project:
-            command += ["--billing-project", args.billing_project]
-        command.append(bigquery_operation)
-        if args.command != "bigquery-list":
-            command.append(args.concept_id)
-        if args.command == "bigquery-sample":
-            command += ["--count", str(args.count)]
         return run(command)
     raise AssertionError(args.command)
 

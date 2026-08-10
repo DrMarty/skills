@@ -4,7 +4,7 @@
 
 ### R-OKF-001: Valid Codex package
 
-The repository shall contain an `okf-manager` directory with a valid Codex plugin manifest and at least one discoverable skill.
+The repository shall contain an `okf-manager` directory with a valid Codex plugin manifest and one canonical discoverable skill named `okf`, invoked explicitly as `$okf`.
 
 ### R-OKF-002: Local-first development
 
@@ -46,9 +46,9 @@ Source inventory and raw-evidence retention shall exclude hidden files, reposito
 
 URL ingestion shall require explicit seeds and enforce HTTP(S), allowed hosts, allowed path prefixes, denied path substrings, crawl depth, page budgets, visited-state tracking, response size limits, and user-directed network disclosure.
 
-### R-OKF-012: Optional BigQuery enrichment
+### R-OKF-012: Self-contained catalog management
 
-BigQuery concept listing, metadata reads, and row sampling shall remain available as optional operations and shall fail clearly when the optional dependency or credentials are unavailable.
+Installing the plugin shall provide the skills and deterministic tools required for its supported catalog-management and provenance workflows without requiring an external data-warehouse integration.
 
 ### R-OKF-013: End-to-end local verification
 

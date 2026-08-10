@@ -11,8 +11,7 @@ It supports:
 - deterministic alphabetical glossary generation for common terms and acronyms;
 - deterministic index generation;
 - interactive `viz.html` graph generation with an embedded glossary, hierarchical visibility controls, collapsible and resizable side-panel sections, Markdown details, navigation history, manifest-derived About information, and payload verification;
-- stateful, host/path/depth/page-limited web ingestion;
-- optional BigQuery concept discovery, metadata reads, and sampling.
+- stateful, host/path/depth/page-limited web ingestion.
 
 The package uses a user-local worker environment and does not require an MCP server or hosted service for local catalog operation.
 
@@ -25,5 +24,7 @@ codex plugin marketplace add <absolute-path-to-this-repository>
 ```
 
 Then open the Codex Plugins interface, select `okf-manager` from **DrMarty Skills (Local)**, and install it. Start a new Codex task after installation. See [`Documentation/local-testing.md`](./Documentation/local-testing.md) for validation commands and smoke prompts.
+
+Invoke the installed skill as `$okf`.
 
 See [`Requirements`](./Requirements/Index.md) and [`Documentation`](./Documentation/Index.md) for the governing requirements and architecture.

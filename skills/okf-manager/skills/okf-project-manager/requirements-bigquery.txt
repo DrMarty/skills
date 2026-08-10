@@ -1,3 +1,0 @@
-# Optional BigQuery enrichment dependency.
-google-cloud-bigquery>=3.25
-

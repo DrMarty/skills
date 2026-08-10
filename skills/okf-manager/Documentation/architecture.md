@@ -9,17 +9,16 @@ okf-manager/
 ├── Documentation/
 ├── Requirements/
 ├── tests/
-└── skills/okf-project-manager/
+└── skills/okf/
     ├── SKILL.md
     ├── agents/openai.yaml
     ├── assets/viz-template.html
     ├── references/
     ├── requirements-worker.txt
-    ├── requirements-bigquery.txt
     └── scripts/
 ```
 
-The skill owns workflow and policy. References provide progressive disclosure. Scripts provide low-variance filesystem, ingestion, validation, glossary, indexing, graph, guarded network, and optional BigQuery operations. `assets/viz-template.html` is the canonical interactive graph shell; `okf_visualize_bundle.py` injects escaped bundle identity and serialized graph data into its placeholders.
+The `okf` skill owns workflow and policy and is explicitly invoked as `$okf`. References provide progressive disclosure. Scripts provide low-variance filesystem, ingestion, validation, glossary, indexing, graph, and guarded network operations. `assets/viz-template.html` is the canonical interactive graph shell; `okf_visualize_bundle.py` injects escaped bundle identity and serialized graph data into its placeholders.
 
 ## Glossary interface
 
@@ -51,7 +50,6 @@ The graph shell uses three resizable desktop regions: a left navigation/glossary
 | generated glossary | `okf_generate_glossary.py` |
 | live graph and verification | `okf_visualize_bundle.py`, `okf_verify_graph.py` |
 | guarded URL fetch state | `okf_fetch_url.py` |
-| BigQuery discovery/read/sample | optional `okf_bigquery.py` |
 | specialist-agent orchestration | concise Codex skill plus deterministic runner |
 
 Agent Zero profile registries, `/a0` paths, `call_subordinate`, and framework tool shims are intentionally not copied because Codex supplies its own skill and tool orchestration.
@@ -63,4 +61,3 @@ Agent Zero profile registries, `/a0` paths, `call_subordinate`, and framework to
 - Source inventory and copying exclude internal/generated paths.
 - Web crawling is explicit, stateful, and guard-limited.
 - Web-pass writes preserve existing schemas, citations, and unknown metadata.
-- BigQuery remains optional and credential-dependent.
