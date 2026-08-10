@@ -4,7 +4,7 @@ Codex skills and plugins maintained by DrMarty.
 
 ## Plugins
 
-- [`okf-manager`](./skills/okf-manager/): Codex-native OKF Manager plugin with an Agent Zero-compatible functional baseline.
+- [`okf-manager`](./skills/okf-manager/): Codex-native Open Knowledge Format [OKF](https://github.com/GoogleCloudPlatform/knowledge-catalog/tree/main/okf) plugin for curating your personal knowledge base / [LLM Wiki](https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f).
 
 ## Repository structure
 
