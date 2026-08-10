@@ -9,6 +9,7 @@ from pathlib import Path
 
 _LINK_RE = re.compile(r"\]\(([^)\s]+\.md)(?:#[A-Za-z0-9_-]*)?\)")
 _MARKDOWN_LINK_RE = re.compile(r"\[([^\]]+)\]\(([^)]+)\)")
+_PLUGIN_HOMEPAGE = "https://github.com/DrMarty/skills/tree/master/skills/okf-manager"
 _TYPE_COLORS = [
     "#60a5fa",
     "#34d399",
@@ -53,6 +54,23 @@ def _parse_glossary(root: Path, concept_ids: set[str]) -> list[dict]:
             "sources": sources,
         })
     return entries
+
+
+def _plugin_metadata() -> dict:
+    manifest_path = Path(__file__).resolve().parents[3] / ".codex-plugin" / "plugin.json"
+    metadata = {
+        "name": "OKF Manager",
+        "version": "unknown",
+        "url": _PLUGIN_HOMEPAGE,
+    }
+    try:
+        manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+        interface = manifest.get("interface") if isinstance(manifest.get("interface"), dict) else {}
+        metadata["name"] = str(interface.get("displayName") or manifest.get("name") or metadata["name"])
+        metadata["version"] = str(manifest.get("version") or metadata["version"])
+    except (OSError, ValueError, TypeError):
+        pass
+    return metadata
 
 def _build_graph(root: Path) -> dict:
     concepts = []
@@ -114,6 +132,7 @@ def _build_graph(root: Path) -> dict:
         "types": type_names,
         "palette": palette,
         "glossary": _parse_glossary(root, ids),
+        "generator": _plugin_metadata(),
         "stats": {
             "mode": "live-d3-self-graph",
             "concepts": len(concepts),

@@ -78,6 +78,12 @@ The generated graph workspace shall divide the concept-detail content into indep
 
 Collapsing a detail section shall redistribute the available height among the remaining expanded sections. Links in the Outgoing Links, Backlinks, and Markdown Body Preview sections shall continue to select the associated concept through the normal detail-navigation path.
 
+### R-OKF-018: Generator identity and update information
+
+The generated graph workspace shall provide an About control in the upper-right header. Activating it shall display the generator name, the exact plugin version read from the plugin manifest, and a clickable canonical GitHub URL for plugin installation and updates.
+
+The About display shall support explicit dismissal, outside-click dismissal, and Escape-key dismissal without navigating away from the graph.
+
 ## Local-test milestone
 
 The local-test milestone is complete only when the Codex plugin and skill validators pass, the end-to-end worker tests pass, the local marketplace exposes `okf-manager`, Codex reports the plugin as installed, and a fresh Codex task can load the updated skill.

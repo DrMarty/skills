@@ -10,7 +10,7 @@ It supports:
 - strict frontmatter and relative-link validation;
 - deterministic alphabetical glossary generation for common terms and acronyms;
 - deterministic index generation;
-- interactive `viz.html` graph generation with an embedded glossary, hierarchical visibility controls, collapsible and resizable side-panel sections, Markdown details, navigation history, and payload verification;
+- interactive `viz.html` graph generation with an embedded glossary, hierarchical visibility controls, collapsible and resizable side-panel sections, Markdown details, navigation history, manifest-derived About information, and payload verification;
 - stateful, host/path/depth/page-limited web ingestion;
 - optional BigQuery concept discovery, metadata reads, and sampling.
 
