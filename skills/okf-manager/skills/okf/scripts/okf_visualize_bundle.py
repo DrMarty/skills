@@ -10,6 +10,7 @@ from pathlib import Path
 _LINK_RE = re.compile(r"\]\(([^)\s]+\.md)(?:#[A-Za-z0-9_-]*)?\)")
 _MARKDOWN_LINK_RE = re.compile(r"\[([^\]]+)\]\(([^)]+)\)")
 _PLUGIN_HOMEPAGE = "https://github.com/DrMarty/skills/tree/master/skills/okf-manager"
+_TYPE_SEPARATOR = " / "
 _TYPE_COLORS = [
     "#60a5fa",
     "#34d399",
@@ -20,6 +21,46 @@ _TYPE_COLORS = [
     "#fb7185",
     "#84cc16",
 ]
+
+
+def _build_type_tree(type_names: list[str]) -> list[dict]:
+    """Build a deterministic arbitrary-depth tree from canonical type paths."""
+    root: dict[str, dict] = {}
+    for type_name in sorted(set(type_names), key=str.casefold):
+        parts = [part.strip() for part in type_name.split(_TYPE_SEPARATOR) if part.strip()]
+        if not parts:
+            parts = [type_name]
+        children = root
+        path_parts: list[str] = []
+        node = None
+        for part in parts:
+            path_parts.append(part)
+            path = _TYPE_SEPARATOR.join(path_parts)
+            node = children.setdefault(part, {
+                "name": part,
+                "path": path,
+                "types": set(),
+                "directTypes": set(),
+                "children": {},
+            })
+            node["types"].add(type_name)
+            children = node["children"]
+        node["directTypes"].add(type_name)
+
+    def serialize(children: dict[str, dict]) -> list[dict]:
+        result = []
+        for name in sorted(children, key=str.casefold):
+            node = children[name]
+            result.append({
+                "name": node["name"],
+                "path": node["path"],
+                "types": sorted(node["types"], key=str.casefold),
+                "directTypes": sorted(node["directTypes"], key=str.casefold),
+                "children": serialize(node["children"]),
+            })
+        return result
+
+    return serialize(root)
 
 
 
@@ -130,6 +171,7 @@ def _build_graph(root: Path) -> dict:
         "nodes": concepts,
         "edges": edges,
         "types": type_names,
+        "typeTree": _build_type_tree(type_names),
         "palette": palette,
         "glossary": _parse_glossary(root, ids),
         "generator": _plugin_metadata(),
