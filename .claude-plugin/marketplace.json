@@ -1,0 +1,30 @@
+{
+  "name": "drmarty-skills",
+  "owner": {
+    "name": "DrMarty",
+    "url": "https://github.com/DrMarty"
+  },
+  "plugins": [
+    {
+      "name": "okf-manager",
+      "source": "./skills/okf-manager",
+      "displayName": "OKF Manager",
+      "description": "Build and maintain portable, provenance-aware Open Knowledge Format (OKF) catalogs with deterministic validation, indexing, and graph visualization.",
+      "version": "0.4.0",
+      "author": {
+        "name": "DrMarty",
+        "url": "https://github.com/DrMarty"
+      },
+      "homepage": "https://github.com/DrMarty/skills/tree/master/skills/okf-manager",
+      "repository": "https://github.com/DrMarty/skills",
+      "license": "MIT",
+      "keywords": [
+        "okf",
+        "knowledge-catalog",
+        "provenance",
+        "visualization"
+      ],
+      "category": "Productivity"
+    }
+  ]
+}

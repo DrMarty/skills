@@ -6,6 +6,7 @@
 skills-repository/
 ├── AGENTS.md
 ├── .agents/plugins/marketplace.json
+├── .claude-plugin/marketplace.json
 ├── Documentation/
 ├── Requirements/
 └── skills/
@@ -19,7 +20,7 @@ skills-repository/
 
 Root documentation and requirements govern the collection as a whole. Each package is a durable ownership boundary containing its implementation intent, implementation documentation, validation guidance, and distribution metadata.
 
-The repository-local marketplace exposes canonical package directories for local Codex installation before public submission. Marketplace entries must not require duplicate plugin copies outside `skills/`.
+The repository-local marketplaces expose canonical package directories for local installation before public submission: `.agents/plugins/marketplace.json` for Codex and `.claude-plugin/marketplace.json` for Claude Code / Claude Cowork. Marketplace entries must not require duplicate plugin copies outside `skills/`; both marketplaces reference the same `skills/<package-name>/` directory for a given package.
 
 ## Package independence
 
