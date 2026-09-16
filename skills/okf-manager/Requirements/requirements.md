@@ -90,6 +90,10 @@ The generated graph workspace shall support type paths of arbitrary depth using 
 
 Each type branch shall include concepts assigned directly to that type followed by child-type branches. Parent visibility controls and counts shall aggregate all direct and descendant concepts, including correct checked and indeterminate states. Existing flat type names shall remain valid one-level trees.
 
+### R-OKF-020: Claude Code / Claude Cowork packaging
+
+The repository shall also expose the canonical `okf` skill as a Claude Code plugin, installable independently of Codex, via a `.claude-plugin/plugin.json` package manifest and a repository-root `.claude-plugin/marketplace.json` marketplace entry. The bundled skill, its scripts, references, and assets shall remain identical byte-for-byte across both host packagings; only the plugin manifests and any per-host interface metadata (such as `skills/okf/agents/openai.yaml`) may differ. Removing or breaking either host's manifest shall not be required to support the other.
+
 ## Local-test milestone
 
-The local-test milestone is complete only when the Codex plugin and skill validators pass, the end-to-end worker tests pass, the local marketplace exposes `okf-manager`, Codex reports the plugin as installed, and a fresh Codex task can load the updated skill.
+The local-test milestone is complete only when the Codex plugin and skill validators pass, the Claude Code plugin manifest and skill load cleanly via `claude --plugin-dir`, the end-to-end worker tests pass, both local marketplaces expose `okf-manager`, Codex and Claude Code each report the plugin as installed, and a fresh task in either host can load the updated skill.

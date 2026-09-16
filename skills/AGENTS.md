@@ -2,7 +2,7 @@
 
 ## Purpose
 
-- Own all Codex skill and plugin packages published from this repository.
+- Own all skill and plugin packages published from this repository, packaged for Codex and/or Claude Code / Claude Cowork.
 
 ## Ownership
 
@@ -19,10 +19,11 @@
 
 - Add new packages as `skills/<package-name>/` using lower-case hyphenated names.
 - Update the repository README when adding or removing a package.
+- Package a shared `skills/<skill>/SKILL.md` for every host it targets by adding the matching manifest (`.codex-plugin/plugin.json`, `.claude-plugin/plugin.json`) rather than forking the skill content per host.
 
 ## Verification
 
-- Validate changed plugin manifests and skill frontmatter with the available Codex plugin and skill validators.
+- Validate changed plugin manifests and skill frontmatter with the available Codex plugin and skill validators, and with `claude plugin validate` / `claude --plugin-dir` for Claude Code.
 - Run deterministic package-specific checks documented by the package before publishing changes.
 
 ## Child DOX Index

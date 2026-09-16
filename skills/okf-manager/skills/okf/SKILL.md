@@ -7,6 +7,8 @@ description: Manage portable Open Knowledge Format (OKF) catalogs in Codex, incl
 
 Use the deterministic runner in `scripts/okf_run.py` for catalog operations. Resolve all paths explicitly and run the script from this installed skill directory, never from retained evidence.
 
+This skill is shared verbatim across every supported host: invoke it as `$okf` in Codex and as `/okf-manager:okf` (or by plain-language request, since the description above triggers automatic invocation) in Claude Code and Claude Cowork. Nothing in this file or in `scripts/` is host-specific.
+
 Read these references only when needed:
 
 - `references/okf-format.md` for concept structure and preservation rules.

@@ -5,6 +5,7 @@
 ```text
 okf-manager/
 ├── .codex-plugin/plugin.json
+├── .claude-plugin/plugin.json
 ├── assets/
 ├── Documentation/
 ├── Requirements/
@@ -18,7 +19,11 @@ okf-manager/
     └── scripts/
 ```
 
-The `okf` skill owns workflow and policy and is explicitly invoked as `$okf`. References provide progressive disclosure. Scripts provide low-variance filesystem, ingestion, validation, glossary, indexing, graph, and guarded network operations. `assets/viz-template.html` is the canonical interactive graph shell; `okf_visualize_bundle.py` injects escaped bundle identity and serialized graph data into its placeholders.
+The `okf` skill owns workflow and policy and is explicitly invoked as `$okf` in Codex or `/okf-manager:okf` in Claude Code / Claude Cowork (each host also allows plain-language, description-triggered invocation). References provide progressive disclosure. Scripts provide low-variance filesystem, ingestion, validation, glossary, indexing, graph, and guarded network operations. `assets/viz-template.html` is the canonical interactive graph shell; `okf_visualize_bundle.py` injects escaped bundle identity and serialized graph data into its placeholders.
+
+## Dual-host packaging
+
+`.codex-plugin/plugin.json` and `.claude-plugin/plugin.json` are independent manifests read by their respective hosts; each declares the same identity fields (`name`, `version`, `description`, `author`, `homepage`, `repository`, `license`, `keywords`) and points at the same `skills/okf/` directory. Neither manifest embeds host-specific behavior into the skill itself: `skills/okf/SKILL.md`, its `scripts/`, `references/`, and `assets/` are shared verbatim, so a change to catalog behavior only needs to be made once. `skills/okf/agents/openai.yaml` is read only by Codex and is ignored by Claude Code. The repository root carries one marketplace file per host (`.agents/plugins/marketplace.json` for Codex, `.claude-plugin/marketplace.json` for Claude Code), both pointing at the canonical `./skills/okf-manager` package directory rather than a duplicated copy.
 
 ## Glossary interface
 

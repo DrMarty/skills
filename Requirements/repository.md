@@ -25,3 +25,7 @@ Each published package shall remain independently understandable, validatable, v
 ### R-REPO-006: Local marketplace validation
 
 The repository shall provide a local marketplace definition that exposes packages from their canonical `skills/<package-name>/` directories for Codex installation and pre-publication testing.
+
+### R-REPO-007: Multi-host marketplace validation
+
+The repository shall also provide a local Claude Code marketplace definition (`.claude-plugin/marketplace.json`) that exposes the same packages from their canonical `skills/<package-name>/` directories for Claude Code / Claude Cowork installation and pre-publication testing, without duplicating package contents outside `skills/`.
